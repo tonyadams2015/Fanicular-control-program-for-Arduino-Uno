@@ -1,8 +1,6 @@
 #include <PinChangeInterrupt.h>
 
 #define PIN_LS_ROAD 0
-#define PCINT_PIN_LS_ROAD 16
-
 #define PIN_LS_BASEMENT 1
 #define PIN_LS_HOUSE 2
 #define PIN_CALL_ROAD 4 
@@ -15,31 +13,61 @@
 void pins_init (void)
 {
   pinMode (PIN_LS_ROAD, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_road_isr, LOW);
+
   pinMode (PIN_LS_BASEMENT, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_basement_isr, LOW);
+
   pinMode (PIN_LS_HOUSE, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_LS_HOUSE), pin_ls_house_isr, LOW);
+
   pinMode (PIN_CALL_ROAD, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_ROAD), pin_call_road_isr, LOW);
+
   pinMode (PIN_CALL_BASEMENT, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_BASEMENT), pin_call_basement_isr, LOW);
+
   pinMode (PIN_CALL_HOUSE, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_HOUSE), pin_call_house_isr, LOW);
+
   pinMode (PIN_ESTOP, INPUT_PULLUP);
-  pinMode (PIN_FAN_UP, INPUT_PULLUP);
-  pinMode (PIN_FAN_DOWN, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), NULL, LOW);
-}
-void setup1() {
-  // set pin to input with a pullup, led to output
-  //pinMode(pinBlink, INPUT_PULLUP);
-  //pinMode(LED_BUILTIN, OUTPUT);
+  attachPCINT(digitalPinToPCINT(PIN_ESTOP), pin_estop_isr, LOW);
 
-  // Manually blink once to test if LED is functional
-  //blinkLed();
-  //delay(1000);
-  //blinkLed();
-
-  // Attach the new PinChangeInterrupt and enable event function below
-  //attachPCINT(digitalPinToPCINT(pinBlink), blinkLed, CHANGE);
+  pinMode (PIN_FAN_UP, OUTPUT);
+  pinMode (PIN_FAN_DOWN, OUTPUT);
 }
 
-//void blinkLed(void) {
-  // Switch Led state
-  //digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-//}
+void pin_ls_road_isr ()
+{
+  sm_event_send (EVT_LS_ROAD, 0);
+}
+
+void pin_ls_basement_isr ()
+{
+  sm_event_send (EVT_LS_BASEMENT, 0);
+}
+
+void pin_ls_house_isr ()
+{
+  sm_event_send (EVT_LS_HOUSE, 0);
+}
+
+void pin_call_road_isr ()
+{
+  sm_event_send (EVT_CALL_ROAD, 0);
+}
+
+void pin_call_basement_isr ()
+{
+  sm_event_send (EVT_CALL_BASEMENT, 0);
+}
+
+void pin_call_house_isr ()
+{
+  sm_event_send (EVT_CALL_HOUSE, 0);
+}
+
+void pin_estop_isr ()
+{
+  sm_event_send (EVT_ESTOP, 0);
+}
