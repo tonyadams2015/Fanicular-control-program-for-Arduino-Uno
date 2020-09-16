@@ -52,6 +52,7 @@ void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
                                           
 void sm_init (void)                              
 {
+  sm_next_state (OFF);
 }
 
 void sm_event_send (int event, long value)
@@ -91,6 +92,47 @@ void sm_exit (void)
   }
 }
 
-void sm_exit_blah (void)
-{
-}
+void sm_enter_off (void)
+{}
+void sm_enter_starting (void)
+{}
+void sm_enter_idle (void)
+{}
+void sm_enter_up (void)
+{}
+void sm_enter_down (void)
+{}
+void sm_enter_stopping (void)
+{}
+void sm_enter_failure (void)
+{}
+
+void sm_off (int state, long value)
+{}
+void sm_starting (int state, long value)
+{}
+void sm_idle (int state, long value)
+{}
+void sm_up (int state, long value)
+{}
+void sm_down (int state, long value)
+{}
+void sm_stopping (int state, long value)
+{}
+void sm_failure (int state, long value)
+{}
+
+void sm_exit_off (void)
+{}
+void sm_exit_starting (void)
+{}
+void sm_exit_idle (void)
+{}
+void sm_exit_up (void)
+{}
+void sm_exit_down (void)
+{}
+void sm_exit_stopping (void)
+{}
+void sm_exit_failure (void)
+{}
