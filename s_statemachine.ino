@@ -108,7 +108,7 @@ void sm_enter_starting (void)
 
 void sm_enter_idle (void)
 {
-
+  Serial.println("entering Idle state\n");
 }
 
 void sm_enter_up (void)
@@ -131,37 +131,40 @@ void sm_enter_failure (void)
 
 }
 
-void sm_off (int state, long value)
+void sm_off (int event, long value)
 {
 
 }
 
-void sm_starting (int state, long value)
+void sm_starting (int event, long value)
 {
 
 }
 
-void sm_idle (int state, long value)
+void sm_idle (int event, long value)
 {
-
+  Serial.print ("process idle state ");
+  Serial.print (event);
+  Serial.print ("\n");
+  
 }
 
-void sm_up (int state, long value)
+void sm_up (int event, long value)
 {
 
 }
  
-void sm_down (int state, long value)
+void sm_down (int event, long value)
 {
 
 }
 
-void sm_stopping (int state, long value)
+void sm_stopping (int event, long value)
 {
 
 }
 
-void sm_failure (int state, long value)
+void sm_failure (int event, long value)
 {
 
 }

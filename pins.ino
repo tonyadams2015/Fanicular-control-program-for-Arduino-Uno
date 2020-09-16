@@ -13,25 +13,25 @@
 void pins_init (void)
 {
   pinMode (PIN_LS_ROAD, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_road_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_road_isr, FALLING);
 
   pinMode (PIN_LS_BASEMENT, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_basement_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), pin_ls_basement_isr, FALLING);
 
   pinMode (PIN_LS_HOUSE, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_LS_HOUSE), pin_ls_house_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_LS_HOUSE), pin_ls_house_isr, FALLING);
 
   pinMode (PIN_CALL_ROAD, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_CALL_ROAD), pin_call_road_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_ROAD), pin_call_road_isr, FALLING);
 
   pinMode (PIN_CALL_BASEMENT, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_CALL_BASEMENT), pin_call_basement_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_BASEMENT), pin_call_basement_isr, FALLING);
 
   pinMode (PIN_CALL_HOUSE, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_CALL_HOUSE), pin_call_house_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_CALL_HOUSE), pin_call_house_isr, FALLING);
 
   pinMode (PIN_ESTOP, INPUT_PULLUP);
-  attachPCINT(digitalPinToPCINT(PIN_ESTOP), pin_estop_isr, LOW);
+  attachPCINT(digitalPinToPCINT(PIN_ESTOP), pin_estop_isr, FALLING);
 
   pinMode (PIN_FAN_UP, OUTPUT);
   pinMode (PIN_FAN_DOWN, OUTPUT);
