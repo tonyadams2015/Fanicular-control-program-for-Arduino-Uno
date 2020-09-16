@@ -143,7 +143,7 @@ void sm_starting (int event, long value)
 
 void sm_idle (int event, long value)
 {
-  Serial.print ("process idle state ");
+  Serial.print ("process idle state, event ");
   Serial.print (event);
   Serial.print ("\n");
 }
