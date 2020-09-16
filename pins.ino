@@ -1,8 +1,8 @@
-#include <PinChangeInt.h>
-
-// manually defined pcint number
+#include <PinChangeInterrupt.h>
 
 #define PIN_LS_ROAD 0
+#define PCINT_PIN_LS_ROAD 16
+
 #define PIN_LS_BASEMENT 1
 #define PIN_LS_HOUSE 2
 #define PIN_CALL_ROAD 4 
@@ -12,6 +12,19 @@
 #define PIN_FAN_UP 9
 #define PIN_FAN_DOWN 9
 
+void pins_init (void)
+{
+  pinMode (PIN_LS_ROAD, INPUT_PULLUP);
+  pinMode (PIN_LS_BASEMENT, INPUT_PULLUP);
+  pinMode (PIN_LS_HOUSE, INPUT_PULLUP);
+  pinMode (PIN_CALL_ROAD, INPUT_PULLUP);
+  pinMode (PIN_CALL_BASEMENT, INPUT_PULLUP);
+  pinMode (PIN_CALL_HOUSE, INPUT_PULLUP);
+  pinMode (PIN_ESTOP, INPUT_PULLUP);
+  pinMode (PIN_FAN_UP, INPUT_PULLUP);
+  pinMode (PIN_FAN_DOWN, INPUT_PULLUP);
+  attachPCINT(digitalPinToPCINT(PIN_LS_ROAD), NULL, LOW);
+}
 void setup1() {
   // set pin to input with a pullup, led to output
   //pinMode(pinBlink, INPUT_PULLUP);
