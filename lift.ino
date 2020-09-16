@@ -1,3 +1,7 @@
+#include <MsTimer2.h>
+#include <PinChangeInterrupt.h>
+#include <ArduinoQueue.h>
+
 #define NUM_STATES 7
 
 enum events {EVT_STATE_CHANGE, EVT_LS_ROAD, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,

@@ -146,7 +146,6 @@ void sm_idle (int event, long value)
   Serial.print ("process idle state ");
   Serial.print (event);
   Serial.print ("\n");
-  
 }
 
 void sm_up (int event, long value)
