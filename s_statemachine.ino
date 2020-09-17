@@ -1,22 +1,25 @@
 static int sm_curr_state = OFF;
 
 void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_off,
-                                          sm_enter_manual,
+                                          sm_enter_train,
                                           sm_enter_idle,
                                           sm_enter_up,
-                                          sm_enter_down};
+                                          sm_enter_down,
+                                          sm_enter_manual};
                                           
 void (*sm_cb [NUM_STATES])(int, long) =   {sm_off,
-                                           sm_manual,
+                                           sm_train,
                                            sm_idle,
                                            sm_up,
-                                           sm_down};
+                                           sm_down,
+                                           sm_manual};
                             
 void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
-                                          sm_exit_manual,
+                                          sm_exit_train,
                                           sm_exit_idle, 
                                           sm_exit_up,
-                                          sm_exit_down};
+                                          sm_exit_down,
+                                          sm_exit_manual};
 
 String event_desc [NUM_EVENTS + 1] =
   {"",
@@ -29,10 +32,11 @@ String event_desc [NUM_EVENTS + 1] =
    "Estop"};
 
 String state_desc [NUM_STATES] = {"Off state",
-                                  "Manual state",
+                                  "Train state",
                                   "Idle state",
                                   "Up state",
-                                  "Down state"};
+                                  "Down state",
+                                  "Manual state"};
 
 String switch_state_desc [2] = {"activated", "deactivated"};
                                           
@@ -110,13 +114,14 @@ void sm_enter_off (void)
     }
     else
     {
-      sm_next_state (MANUAL);
+      sm_next_state (TRAIN);
     }
   }
 }
 
-void sm_enter_manual (void)
+void sm_enter_train (void)
 {
+  Serial.println ("enter train");
   Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
@@ -141,6 +146,12 @@ void sm_enter_down (void)
   lift_down ();
 }
 
+void sm_enter_manual (void)
+{
+  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
+}
+
+
 void sm_off (int event, long value)
 {  
   switch (event)
@@ -148,6 +159,9 @@ void sm_off (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
+    case EVT_CALL_ROAD:
+    case EVT_CALL_BASEMENT:
+    case EVT_CALL_HOUSE:
       if (check_inputs_ready () == true)
       {
         if (lift_location_get () != I_AM_LOST)
@@ -156,19 +170,16 @@ void sm_off (int event, long value)
         }
         else
         {
-          sm_next_state (MANUAL);
+          sm_next_state (TRAIN);
         }
       }
       break;
-    case EVT_CALL_ROAD:
-    case EVT_CALL_BASEMENT:
-    case EVT_CALL_HOUSE:
     case EVT_ESTOP:
       break;
   }
 }
 
-void sm_manual (int event, long value)
+void sm_train (int event, long value)
 {
   if (value == HIGH)
   {
@@ -202,6 +213,7 @@ void sm_manual (int event, long value)
 
 void sm_idle (int event, long value)
 {
+  byte next;
   if (value == HIGH)
   {
     /* Don't care */
@@ -241,11 +253,6 @@ void sm_up (int event, long value)
       sm_next_state (IDLE);
       break;
     case EVT_CALL_ROAD:
-      if (lift_location_get () == I_AM_LOST)
-      {
-        sm_next_state (MANUAL);
-      }
-      break;
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
       break;
@@ -272,16 +279,40 @@ void sm_down (int event, long value)
       break;
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
-      break;
     case EVT_CALL_HOUSE:
-      if (lift_location_get () == I_AM_LOST)
-      {
-        sm_next_state (MANUAL);
-      }
       break;
     case EVT_ESTOP:
       sm_next_state (OFF);
       break;
+  }
+}
+
+void sm_manual (int event, long value)
+{
+  if (value == HIGH)
+  {
+    /* Don't care */
+    return;
+  }
+  
+  switch (event)
+  {
+    case EVT_LS_ROAD:
+      lift_stop ();
+      break;
+    case EVT_LS_BASEMENT:
+    case EVT_LS_HOUSE:
+      break;
+    case EVT_CALL_ROAD:
+      lift_down ();
+      break;
+    case EVT_CALL_BASEMENT:
+      break;
+    case EVT_CALL_HOUSE:
+      lift_up ();
+      break;
+    case EVT_ESTOP:
+      sm_next_state (OFF);
   }
 }
 
@@ -290,7 +321,7 @@ void sm_exit_off (void)
   
 }
 
-void sm_exit_manual (void)
+void sm_exit_train (void)
 {
   
 }
@@ -306,6 +337,11 @@ void sm_exit_up (void)
 }
 
 void sm_exit_down (void)
+{
+
+}
+
+void sm_exit_manual (void)
 {
 
 }

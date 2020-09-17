@@ -3,7 +3,7 @@
 #include <ArduinoQueue.h>
 #include <EEPROM.h>
 
-#define NUM_STATES 5
+#define NUM_STATES 6
 #define NUM_EVENTS 7
 #define PIN_LS_ROAD 2
 #define PIN_LS_BASEMENT 3
@@ -17,8 +17,8 @@
 #define I_AM_LOST 0
 
 enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
-             EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP};
-enum states {OFF, MANUAL, IDLE, UP, DOWN};
+             EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_MANUAL_SELECT};
+enum states {OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
 
 String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
 
@@ -65,7 +65,7 @@ int lift_location_get ()
   return lift_location;
 }
 
-bool lift_how_to_move (byte location)
+byte lift_how_to_move (byte location)
 {
   switch (location)
   {

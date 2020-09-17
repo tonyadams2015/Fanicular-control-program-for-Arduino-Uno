@@ -1,6 +1,7 @@
 
 #define NUM_INPUT_PINS 10
 #define DEBOUNCE_TIME 50
+#define LONG_PRESS_COUNT 200
 
 typedef struct input_config 
 {
@@ -15,9 +16,9 @@ typedef struct input_config
 
 typedef struct input_state 
 {
-  bool pin;
   byte val; 
   bool debounce_active;
+  int on_count;
 } input_state_t;
 
 static input_config_t icfg [NUM_INPUT_PINS] = 
@@ -28,27 +29,27 @@ static input_config_t icfg [NUM_INPUT_PINS] =
    {PIN_LS_HOUSE, true, HIGH, false, CHANGE, pin_ls_house_isr, EVT_LS_HOUSE},
    {PIN_CALL_ROAD, true, HIGH, false, CHANGE, pin_call_road_isr, EVT_CALL_ROAD},
    {PIN_CALL_BASEMENT, true, HIGH, false, CHANGE, pin_call_basement_isr, EVT_CALL_BASEMENT},
-   {PIN_CALL_HOUSE, true, HIGH, false, CHANGE, pin_call_basement_isr, EVT_CALL_HOUSE},
+   {PIN_CALL_HOUSE, true, HIGH, false, CHANGE, pin_call_house_isr, EVT_CALL_HOUSE},
    {PIN_ESTOP, true, HIGH, false, CHANGE, pin_estop_isr, EVT_ESTOP},
    {}};
 
 ArduinoQueue<int> event_queue(10);
 
-static input_config_t istate [NUM_INPUT_PINS] =
+static input_state_t istate [NUM_INPUT_PINS] =
   {{},
    {},
-   {true, HIGH, false},
-   {true, HIGH, false},
-   {true, HIGH, false},
-   {true, HIGH, false},
-   {true, HIGH, false},
-   {true, HIGH, false},
-   {true, HIGH, false},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
+   {HIGH, false, 0},
    {}};
 
 void pins_init (void)
 { 
-  MsTimer2::set(DEBOUNCE_TIME, debounce);
+  MsTimer2::set(DEBOUNCE_TIME, process_inputs);
   MsTimer2::start();
   int pin;
 
@@ -73,18 +74,19 @@ void process_interrupt (int pin)
   event_queue.enqueue (pin);
 }
 
-void debounce (void)
+void process_inputs (void)
 {
   int pin = 0;
   bool val;
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
   {
-    if (istate[pin].valid == false)
+    if (icfg[pin].valid == false)
     {
       continue;  
     }
-    
+
+    /* Debounce */
     if (istate[pin].debounce_active == true)
     {
       val = digitalRead (pin);
@@ -105,7 +107,32 @@ void debounce (void)
       {
         istate[pin].val = val;
       }
-    }     
+    }
+
+    /* Look for long button presses */
+    if ((icfg[pin].pin == PIN_CALL_HOUSE ||
+        icfg[pin].pin == PIN_CALL_BASEMENT) &&
+        istate[pin].val == LOW)
+    {
+      istate[pin].on_count ++;
+      if (istate[pin].on_count > LONG_PRESS_COUNT)
+      {
+        istate[pin].on_count = 0;
+
+        switch (icfg[pin].pin)
+        {
+          case PIN_CALL_HOUSE:
+            sm_event_send (EVT_MANUAL_SELECT, 0);
+            break;
+          case PIN_CALL_BASEMENT:
+            break;
+        }
+      }
+    }
+    else
+    {
+      istate[pin].on_count = 0;
+    }
   }
 
   /* Get get the next key press */
@@ -130,7 +157,7 @@ bool check_inputs_ready (void)
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin ++)
   {
-    if (istate[pin].valid == true && istate[pin].val != HIGH)
+    if (icfg[pin].valid == true && istate[pin].val != HIGH)
     {
       Serial.println ("Error: switch or button on during boot - maybe wiring or device failure\n");
       return false;
