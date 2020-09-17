@@ -3,10 +3,22 @@
 #include <ArduinoQueue.h>
 
 #define NUM_STATES 7
+#define PIN_LS_ROAD 2
+#define PIN_LS_BASEMENT 3
+#define PIN_LS_HOUSE 4
+#define PIN_CALL_ROAD 5 
+#define PIN_CALL_BASEMENT 6
+#define PIN_CALL_HOUSE 7
+#define PIN_ESTOP 8
+#define PIN_FAN_UP 9
+#define PIN_FAN_DOWN 10
+#define I_AM_LOST -1
 
-enum events {EVT_STATE_CHANGE, EVT_LS_ROAD, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
+enum events {EVT_LS_ROAD, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
              EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP};
-enum states {OFF, STARTING, IDLE, UP, DOWN, STOPPING, FAILURE};
+enum states {OFF, MANUAL, IDLE, UP, DOWN};
+
+static int lift_location = I_AM_LOST;
 
 void setup() {
   Serial.begin(9600);  
@@ -15,5 +27,23 @@ void setup() {
   sm_init ();
 }
 
-void loop() {
+void loop()
+{
+
+}
+
+void lift_off (void)
+{
+  digitalWrite(PIN_FAN_UP, HIGH);
+  digitalWrite(PIN_FAN_DOWN, HIGH);
+}
+
+void lift_location_set (byte event)
+{
+  lift_location = event;
+}
+
+int lift_location_get ()
+{
+  return lift_location;
 }

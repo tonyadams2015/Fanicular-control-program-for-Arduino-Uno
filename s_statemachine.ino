@@ -27,28 +27,22 @@ void sm_exit_stopping (void);
 void sm_exit_failure (void);
 
 void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_off,
-                                          sm_enter_starting,
+                                          sm_enter_manual,
                                           sm_enter_idle,
                                           sm_enter_up,
-                                          sm_enter_down,
-                                          sm_enter_stopping,
-                                          sm_enter_failure};
+                                          sm_enter_down};
                                           
 void (*sm_cb [NUM_STATES])(int, long) =   {sm_off,
-                                           sm_starting,
+                                           sm_manual,
                                            sm_idle,
                                            sm_up,
-                                           sm_down,
-                                           sm_stopping,
-                                           sm_failure};
+                                           sm_down};
                             
 void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
-                                          sm_exit_starting,
+                                          sm_exit_manual,
                                           sm_exit_idle, 
                                           sm_exit_up,
-                                          sm_exit_down,
-                                          sm_exit_stopping,
-                                          sm_exit_failure};
+                                          sm_exit_down};
                                           
 void sm_init (void)                              
 {
@@ -57,6 +51,17 @@ void sm_init (void)
 
 void sm_event_send (int event, long value)
 {
+  Serial.println ("Processing switch/button activation, event " + String(event) + "\n");
+
+  switch (event)
+  {
+    case EVT_LS_ROAD:
+    case EVT_LS_BASEMENT:
+    case EVT_LS_HOUSE:
+      lift_location_set (event);
+      break;  
+  }
+  
   sm_update (event, value);
 }
 
@@ -98,17 +103,26 @@ void sm_exit (void)
 
 void sm_enter_off (void)
 {
-  sm_next_state (IDLE);
+  Serial.println ("Entering Off state\n");
+
+  lift_off ();
+  
+  if (check_inputs_ready () == true && lift_location_get () != I_AM_LOST)
+  {
+    sm_next_state (IDLE);
+  }
 }
 
-void sm_enter_starting (void)
+void sm_enter_manual (void)
 {
-
+  Serial.println("Entering manual state\n");
+  lift_off ();
 }
 
 void sm_enter_idle (void)
 {
-  Serial.println("entering Idle state\n");
+  Serial.println("Entering Idle state\n");
+  lift_off ();
 }
 
 void sm_enter_up (void)
@@ -121,31 +135,28 @@ void sm_enter_down (void)
 
 }
 
-void sm_enter_stopping (void)
-{
-
-}
-
-void sm_enter_failure (void)
-{
-
-}
-
 void sm_off (int event, long value)
 {
-
+  if (check_inputs_ready () == true)
+  {
+    if (lift_location_get () != I_AM_LOST)
+    {
+    sm_next_state (IDLE);
+    }
+    else
+    {
+      sm_next_state (MANUAL);
+    }
+  }
 }
 
-void sm_starting (int event, long value)
+void sm_manual (int event, long value)
 {
-
+  
 }
 
 void sm_idle (int event, long value)
 {
-  Serial.print ("process idle state, event ");
-  Serial.print (event);
-  Serial.print ("\n");
 }
 
 void sm_up (int event, long value)
@@ -158,24 +169,14 @@ void sm_down (int event, long value)
 
 }
 
-void sm_stopping (int event, long value)
-{
-
-}
-
-void sm_failure (int event, long value)
-{
-
-}
-
 void sm_exit_off (void)
 {
   
 }
 
-void sm_exit_starting (void)
+void sm_exit_manual (void)
 {
-
+  
 }
 
 void sm_exit_idle (void)
@@ -189,16 +190,6 @@ void sm_exit_up (void)
 }
 
 void sm_exit_down (void)
-{
-
-}
-
-void sm_exit_stopping (void)
-{
-
-}
-
-void sm_exit_failure (void)
 {
 
 }
