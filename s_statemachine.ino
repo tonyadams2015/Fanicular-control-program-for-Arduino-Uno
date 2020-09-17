@@ -288,7 +288,8 @@ void sm_down (int event, long value)
   }
 }
 
-/* Only available above HOUSE */
+/* Only available above HOUSE
+ */
 void sm_manual (int event, long value)
 {
   switch (event)
@@ -299,11 +300,17 @@ void sm_manual (int event, long value)
       sm_next_state (IDLE);
       break;
     case EVT_CALL_ROAD:
+    case EVT_CALL_HOUSE:
+      /* Button released */
+      if (value == HIGH)
+      {
+        lift_stop ();
+      }
+      break;
+    case EVT_CALL_ROAD_LONG:
       lift_down ();
       break;
-    case EVT_CALL_BASEMENT:
-      break;
-    case EVT_CALL_HOUSE:
+    case EVT_CALL_HOUSE_LONG:
       lift_up ();
       break;
     case EVT_ESTOP:
