@@ -32,7 +32,7 @@ void loop()
 
 }
 
-void lift_off (void)
+void lift_stop (void)
 {
   digitalWrite(PIN_FAN_UP, HIGH);
   digitalWrite(PIN_FAN_DOWN, HIGH);
@@ -46,4 +46,50 @@ void lift_location_set (byte event)
 int lift_location_get ()
 {
   return lift_location;
+}
+
+bool lift_how_to_move (byte location)
+{
+  switch (location)
+  {
+    case EVT_CALL_ROAD:
+      switch (lift_location)
+      {
+        case EVT_LS_ROAD:
+          return IDLE;
+        case EVT_LS_BASEMENT:
+        case EVT_LS_HOUSE:
+          return DOWN; 
+      }
+    case EVT_CALL_BASEMENT:
+      switch (lift_location)
+      {
+        case EVT_LS_ROAD:
+          return UP;
+        case EVT_LS_BASEMENT:
+          return IDLE;
+        case EVT_LS_HOUSE:
+          return DOWN; 
+      }
+      case EVT_CALL_HOUSE:
+      switch (lift_location)
+      {
+        case EVT_LS_ROAD:
+          return UP;
+        case EVT_LS_BASEMENT:
+          return UP;
+        case EVT_LS_HOUSE:
+          return IDLE; 
+      }
+  }
+}
+
+void lift_up (void)
+{
+  digitalWrite(PIN_FAN_UP, LOW);
+}
+
+void lift_down (void)
+{
+  digitalWrite(PIN_FAN_DOWN, LOW);
 }
