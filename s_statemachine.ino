@@ -140,13 +140,7 @@ void sm_enter_down (void)
 }
 
 void sm_off (int event, long value)
-{
-  if (value == HIGH)
-  {
-    /* Don't care */
-    return;
-  }
-  
+{  
   switch (event)
   {
     case EVT_LS_ROAD:
@@ -245,6 +239,11 @@ void sm_up (int event, long value)
       sm_next_state (IDLE);
       break;
     case EVT_CALL_ROAD:
+      if (lift_location_get () == I_AM_LOST)
+      {
+        sm_next_state (MANUAL);
+      }
+      break;
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
       break;
@@ -271,7 +270,12 @@ void sm_down (int event, long value)
       break;
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
+      break;
     case EVT_CALL_HOUSE:
+      if (lift_location_get () == I_AM_LOST)
+      {
+        sm_next_state (MANUAL);
+      }
       break;
     case EVT_ESTOP:
       sm_next_state (OFF);

@@ -112,11 +112,9 @@ void debounce (void)
   if (event_queue.isEmpty () == false)
   {
     pin = event_queue.dequeue ();
-    Serial.println(pin);
     
     istate[pin].debounce_active = true;
     istate[pin].val = digitalRead (pin);
-    Serial.println(istate[pin].val);
   }
 }
 

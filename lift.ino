@@ -46,6 +46,10 @@ void lift_location_set (byte event)
 
 int lift_location_get ()
 {
+  if (lift_location == I_AM_LOST)
+  {
+    Serial.println ("I am lost.\n");
+  }
   return lift_location;
 }
 
