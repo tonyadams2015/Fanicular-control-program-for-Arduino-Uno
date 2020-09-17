@@ -14,29 +14,37 @@
 #define PIN_ESTOP 8
 #define PIN_FAN_UP 9
 #define PIN_FAN_DOWN 10
-#define I_AM_LOST 0
+#define SUCCESS 0
+#define FAILURE -1
 
 enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
              EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_CALL_ROAD_LONG,
-             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG};
+             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG, EVT_MAX};
 
 enum states {OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
 
-enum locations {ROAD = 1, BASEMENT, HOUSE};
+enum locations {I_AM_LOST, ROAD, BASEMENT, HOUSE, LOCATION_MAX};
+
+String event_desc [NUM_EVENTS + 1] =
+  {"",
+   "Road limit switch",
+   "Basement limit switch",
+   "House limit switch",
+   "Call road button",
+   "Call basement button",
+   "Call house button",
+   "Estop"};
 
 String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
-
-static byte lift_location = I_AM_LOST;
-static int address = 0x0;
 
 void setup() {
   Serial.begin(9600);  
   Serial.println("--- Start Serial Monitor\n");
 
-  /* Get location */
-  lift_location = EEPROM.read(address);
-
-  Serial.println ("We are at the " + location_desc [lift_location] + "\n");
+  if (location_load () != SUCCESS)
+  {
+    return;
+  }
   
   pins_init ();
   sm_init ();
@@ -44,7 +52,6 @@ void setup() {
 
 void loop()
 {
-
 }
 
 void lift_stop (void)
@@ -52,8 +59,6 @@ void lift_stop (void)
   digitalWrite(PIN_FAN_UP, HIGH);
   digitalWrite(PIN_FAN_DOWN, HIGH);
 }
-
-
 
 void lift_up (void)
 {

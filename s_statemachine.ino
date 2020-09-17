@@ -21,16 +21,6 @@ void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
                                           sm_exit_down,
                                           sm_exit_manual};
 
-String event_desc [NUM_EVENTS + 1] =
-  {"",
-   "Road limit switch",
-   "Basement limit switch",
-   "House limit switch",
-   "Call road button",
-   "Call basement button",
-   "Call house button",
-   "Estop"};
-
 String state_desc [NUM_STATES] = {"Off state",
                                   "Train state",
                                   "Idle state",
@@ -57,6 +47,16 @@ void sm_event_send (int event, long value)
       if (value == LOW)
       {
         location_set (event);
+      }
+      break;
+    case EVT_CALL_ROAD:
+    case EVT_CALL_BASEMENT:
+    case EVT_CALL_HOUSE:
+    case EVT_CALL_ROAD_LONG:
+    case EVT_CALL_HOUSE_LONG:
+      if (value == LOW)
+      {
+        location_cmd_set (event);
       }
       break;
   }
