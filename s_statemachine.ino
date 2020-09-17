@@ -80,6 +80,7 @@ void sm_enter (void)
 {
   if (sm_enter_cb [sm_curr_state] != NULL)
   {
+    Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
     sm_enter_cb [sm_curr_state] ();
   }
 }
@@ -102,9 +103,6 @@ void sm_exit (void)
 
 void sm_enter_off (void)
 {
-  Serial.println("enter off");
-  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
-
   lift_stop ();
   
   if (check_inputs_ready () == true)
@@ -122,37 +120,26 @@ void sm_enter_off (void)
 
 void sm_enter_train (void)
 {
-  Serial.println ("enter train");
-  Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
 
 void sm_enter_idle (void)
 {
-  Serial.println("enter idle");
-  Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
 
 void sm_enter_up (void)
 {
-  Serial.println("enter up");
-  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
-
   lift_up ();
 }
 
 void sm_enter_down (void)
 {
-  Serial.println("enter down");
-  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
-
   lift_down ();
 }
 
 void sm_enter_manual (void)
 {
-  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_up ();
 }
 
@@ -239,8 +226,7 @@ void sm_idle (int event, long value)
     case EVT_ESTOP:
       sm_next_state (OFF);
       break;
-    case EVT_CALL_ROAD_LONG:
-      break;   
+    case EVT_CALL_ROAD_LONG:   
     case EVT_CALL_BASEMENT_LONG:
       break;
     case EVT_CALL_HOUSE_LONG:
