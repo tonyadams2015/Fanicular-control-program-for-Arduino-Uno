@@ -2,29 +2,6 @@
 
 static int sm_curr_state = OFF;
 
-void sm_enter_off (void);
-void sm_enter_starting (void);
-void sm_enter_idle (void);
-void sm_enter_up (void);
-void sm_enter_down (void);
-void sm_enter_stopping (void);
-void sm_enter_failure (void);
-
-void sm_off (int, long);
-void sm_starting (int, long);
-void sm_idle (int, long);
-void sm_up (int, long);
-void sm_down (int, long);
-void sm_stopping (int, long);
-void sm_failure (int, long);
-
-void sm_exit_off (void);
-void sm_exit_starting (void);
-void sm_exit_idle (void);
-void sm_exit_up (void);
-void sm_exit_down (void);
-void sm_exit_stopping (void);
-void sm_exit_failure (void);
 
 void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_off,
                                           sm_enter_manual,
@@ -162,9 +139,28 @@ void sm_off (int event, long value)
 
 void sm_manual (int event, long value)
 {
-  if (lift_location_get () != I_AM_LOST)
+  if (value == HIGH)
   {
-    sm_next_state (IDLE);
+    /* Don't care */
+    return;
+  }
+  
+  switch (event)
+  {
+    case EVT_LS_ROAD:
+    case EVT_LS_BASEMENT:
+    case EVT_LS_HOUSE:
+      if (lift_location_get () != I_AM_LOST)
+      {
+        sm_next_state (IDLE);
+      }
+      break;
+    case EVT_CALL_ROAD:
+      sm_next_state (DOWN);
+      break;
+    case EVT_CALL_HOUSE:
+      sm_next_state (UP);
+      break;
   }
 }
 
