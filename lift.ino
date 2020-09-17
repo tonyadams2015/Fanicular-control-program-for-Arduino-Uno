@@ -17,8 +17,12 @@
 #define I_AM_LOST 0
 
 enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
-             EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_MANUAL_SELECT};
+             EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_CALL_ROAD_LONG,
+             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG};
+
 enum states {OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
+
+enum locations {ROAD = 1, BASEMENT, HOUSE};
 
 String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
 
@@ -49,57 +53,7 @@ void lift_stop (void)
   digitalWrite(PIN_FAN_DOWN, HIGH);
 }
 
-void lift_location_set (byte event)
-{
-  lift_location = event;
-  EEPROM.write(0, event);
-  Serial.println ("Writing new location " + location_desc [event] + " to EEPROM\n");
-}
 
-int lift_location_get ()
-{
-  if (lift_location == I_AM_LOST)
-  {
-    Serial.println ("I am lost.\n");
-  }
-  return lift_location;
-}
-
-byte lift_how_to_move (byte location)
-{
-  switch (location)
-  {
-    case EVT_CALL_ROAD:
-      switch (lift_location)
-      {
-        case EVT_LS_ROAD:
-          return IDLE;
-        case EVT_LS_BASEMENT:
-        case EVT_LS_HOUSE:
-          return DOWN; 
-      }
-    case EVT_CALL_BASEMENT:
-      switch (lift_location)
-      {
-        case EVT_LS_ROAD:
-          return UP;
-        case EVT_LS_BASEMENT:
-          return IDLE;
-        case EVT_LS_HOUSE:
-          return DOWN; 
-      }
-      case EVT_CALL_HOUSE:
-      switch (lift_location)
-      {
-        case EVT_LS_ROAD:
-          return UP;
-        case EVT_LS_BASEMENT:
-          return UP;
-        case EVT_LS_HOUSE:
-          return IDLE; 
-      }
-  }
-}
 
 void lift_up (void)
 {

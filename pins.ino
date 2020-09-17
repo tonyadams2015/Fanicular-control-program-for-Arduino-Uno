@@ -111,7 +111,8 @@ void process_inputs (void)
 
     /* Look for long button presses */
     if ((icfg[pin].pin == PIN_CALL_HOUSE ||
-        icfg[pin].pin == PIN_CALL_BASEMENT) &&
+        icfg[pin].pin == PIN_CALL_BASEMENT ||
+        icfg[pin].pin == PIN_CALL_ROAD) &&
         istate[pin].val == LOW)
     {
       istate[pin].on_count ++;
@@ -122,9 +123,13 @@ void process_inputs (void)
         switch (icfg[pin].pin)
         {
           case PIN_CALL_HOUSE:
-            sm_event_send (EVT_MANUAL_SELECT, 0);
+            sm_event_send (EVT_CALL_HOUSE_LONG, 0);
             break;
           case PIN_CALL_BASEMENT:
+            sm_event_send (EVT_CALL_BASEMENT_LONG, 0);
+            break;
+          case PIN_CALL_ROAD:
+            sm_event_send (EVT_CALL_ROAD_LONG, 0);
             break;
         }
       }

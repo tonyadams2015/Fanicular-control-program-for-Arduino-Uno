@@ -56,9 +56,9 @@ void sm_event_send (int event, long value)
     case EVT_LS_HOUSE:
       if (value == LOW)
       {
-        lift_location_set (event);
+        location_set (event);
       }
-      break;  
+      break;
   }
   
   sm_update (event, value);
@@ -102,13 +102,14 @@ void sm_exit (void)
 
 void sm_enter_off (void)
 {
+  Serial.println("enter off");
   Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
 
   lift_stop ();
   
   if (check_inputs_ready () == true)
   {
-    if (lift_location_get () != I_AM_LOST)
+    if (location_get () != I_AM_LOST)
     {
     sm_next_state (IDLE);
     }
@@ -128,12 +129,14 @@ void sm_enter_train (void)
 
 void sm_enter_idle (void)
 {
+  Serial.println("enter idle");
   Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
 
 void sm_enter_up (void)
 {
+  Serial.println("enter up");
   Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
 
   lift_up ();
@@ -141,6 +144,7 @@ void sm_enter_up (void)
 
 void sm_enter_down (void)
 {
+  Serial.println("enter down");
   Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
 
   lift_down ();
@@ -149,6 +153,7 @@ void sm_enter_down (void)
 void sm_enter_manual (void)
 {
   Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
+  lift_up ();
 }
 
 
@@ -164,7 +169,7 @@ void sm_off (int event, long value)
     case EVT_CALL_HOUSE:
       if (check_inputs_ready () == true)
       {
-        if (lift_location_get () != I_AM_LOST)
+        if (location_get () != I_AM_LOST)
         {
           sm_next_state (IDLE);
         }
@@ -192,7 +197,7 @@ void sm_train (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      if (lift_location_get () != I_AM_LOST)
+      if (location_get () != I_AM_LOST)
       {
         sm_next_state (IDLE);
       }
@@ -229,10 +234,20 @@ void sm_idle (int event, long value)
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
-      sm_next_state (lift_how_to_move (event));
+      sm_next_state (how_to_move_to_location (event));
       break;
     case EVT_ESTOP:
       sm_next_state (OFF);
+      break;
+    case EVT_CALL_ROAD_LONG:
+      break;   
+    case EVT_CALL_BASEMENT_LONG:
+      break;
+    case EVT_CALL_HOUSE_LONG:
+      if (location_get () == HOUSE)
+      {
+        sm_next_state (MANUAL);
+      }
       break;
   }
 }
@@ -287,21 +302,15 @@ void sm_down (int event, long value)
   }
 }
 
+/* Only available above HOUSE */
 void sm_manual (int event, long value)
 {
-  if (value == HIGH)
-  {
-    /* Don't care */
-    return;
-  }
-  
   switch (event)
   {
     case EVT_LS_ROAD:
-      lift_stop ();
-      break;
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
+      sm_next_state (IDLE);
       break;
     case EVT_CALL_ROAD:
       lift_down ();
