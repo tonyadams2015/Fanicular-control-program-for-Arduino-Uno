@@ -189,12 +189,10 @@ void sm_train (int event, long value)
         sm_next_state (IDLE);
       }
       break;
-    case EVT_CALL_ROAD:
+    case EVT_CALL_ROAD_LONG:
       sm_next_state (DOWN);
       break;
-    case EVT_CALL_BASEMENT:
-      break;
-    case EVT_CALL_HOUSE:
+    case EVT_CALL_HOUSE_LONG:
       sm_next_state (UP);
       break;
     case EVT_ESTOP:
