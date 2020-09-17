@@ -51,14 +51,17 @@ void sm_init (void)
 
 void sm_event_send (int event, long value)
 {
-  Serial.println ("Processing switch/button activation, event " + String(event) + "\n");
+  Serial.println ("Processing switch/button activation, event " + String(event) + " " + String(value) +"\n");
 
   switch (event)
   {
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      lift_location_set (event);
+      if (value == LOW)
+      {
+        lift_location_set (event);
+      }
       break;  
   }
   
@@ -107,9 +110,16 @@ void sm_enter_off (void)
 
   lift_off ();
   
-  if (check_inputs_ready () == true && lift_location_get () != I_AM_LOST)
+  if (check_inputs_ready () == true)
   {
+    if (lift_location_get () != I_AM_LOST)
+    {
     sm_next_state (IDLE);
+    }
+    else
+    {
+      sm_next_state (MANUAL);
+    }
   }
 }
 
@@ -141,7 +151,7 @@ void sm_off (int event, long value)
   {
     if (lift_location_get () != I_AM_LOST)
     {
-    sm_next_state (IDLE);
+      sm_next_state (IDLE);
     }
     else
     {
@@ -152,7 +162,10 @@ void sm_off (int event, long value)
 
 void sm_manual (int event, long value)
 {
-  
+  if (lift_location_get () != I_AM_LOST)
+  {
+    sm_next_state (IDLE);
+  }
 }
 
 void sm_idle (int event, long value)
