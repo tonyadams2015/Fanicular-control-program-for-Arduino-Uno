@@ -1,6 +1,7 @@
 #include <MsTimer2.h>
 #include <PinChangeInterrupt.h>
 #include <ArduinoQueue.h>
+#include <EEPROM.h>
 
 #define NUM_STATES 5
 #define NUM_EVENTS 7
@@ -13,17 +14,26 @@
 #define PIN_ESTOP 8
 #define PIN_FAN_UP 9
 #define PIN_FAN_DOWN 10
-#define I_AM_LOST -1
+#define I_AM_LOST 0
 
-enum events {EVT_LS_ROAD, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
+enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
              EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP};
 enum states {OFF, MANUAL, IDLE, UP, DOWN};
 
-static int lift_location = I_AM_LOST;
+String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
+
+static byte lift_location = I_AM_LOST;
+static int address = 0x0;
 
 void setup() {
   Serial.begin(9600);  
   Serial.println("--- Start Serial Monitor\n");
+
+  /* Get location */
+  lift_location = EEPROM.read(address);
+
+  Serial.println ("We are at the " + location_desc [lift_location] + "\n");
+  
   pins_init ();
   sm_init ();
 }
@@ -42,6 +52,8 @@ void lift_stop (void)
 void lift_location_set (byte event)
 {
   lift_location = event;
+  EEPROM.write(0, event);
+  Serial.println ("Writing new location " + location_desc [event] + " to EEPROM\n");
 }
 
 int lift_location_get ()

@@ -18,13 +18,15 @@ void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
                                           sm_exit_up,
                                           sm_exit_down};
 
-String event_desc [NUM_EVENTS] = {"Road limit switch",
-                                  "Basement limit switch",
-                                  "House limit switch",
-                                  "Call road button",
-                                  "Call basement button",
-                                  "Call house button",
-                                  "Estop"};
+String event_desc [NUM_EVENTS + 1] =
+  {"",
+   "Road limit switch",
+   "Basement limit switch",
+   "House limit switch",
+   "Call road button",
+   "Call basement button",
+   "Call house button",
+   "Estop"};
 
 String state_desc [NUM_STATES] = {"Off state",
                                   "Manual state",
