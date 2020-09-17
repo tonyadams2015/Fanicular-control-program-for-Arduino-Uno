@@ -1,7 +1,4 @@
-
-
 static int sm_curr_state = OFF;
-
 
 void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_off,
                                           sm_enter_manual,
@@ -20,6 +17,22 @@ void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
                                           sm_exit_idle, 
                                           sm_exit_up,
                                           sm_exit_down};
+
+String event_desc [NUM_EVENTS] = {"Road limit switch",
+                                  "Basement limit switch",
+                                  "House limit switch",
+                                  "Call road button",
+                                  "Call basement button",
+                                  "Call house button",
+                                  "Estop"};
+
+String state_desc [NUM_STATES] = {"Off state",
+                                  "Manual state",
+                                  "Idle state",
+                                  "Up state",
+                                  "Down state"};
+
+String switch_state_desc [2] = {"activated", "deactivated"};
                                           
 void sm_init (void)                              
 {
@@ -28,7 +41,7 @@ void sm_init (void)
 
 void sm_event_send (int event, long value)
 {
-  Serial.println ("Processing switch/button activation, event " + String(event) + " " + String(value) +"\n");
+  Serial.println ("Processing " +  event_desc [event] + " = " + switch_state_desc [value] + "\n");
 
   switch (event)
   {
@@ -83,7 +96,7 @@ void sm_exit (void)
 
 void sm_enter_off (void)
 {
-  Serial.println ("Entering Off state\n");
+  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
 
   lift_stop ();
   
@@ -102,23 +115,27 @@ void sm_enter_off (void)
 
 void sm_enter_manual (void)
 {
-  Serial.println("Entering manual state\n");
+  Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
 
 void sm_enter_idle (void)
 {
-  Serial.println("Entering Idle state\n");
+  Serial.println("Entering " + state_desc[sm_get_curr_state ()] + "\n");
   lift_stop ();
 }
 
 void sm_enter_up (void)
 {
+  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
+
   lift_up ();
 }
 
 void sm_enter_down (void)
 {
+  Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
+
   lift_down ();
 }
 
@@ -148,11 +165,8 @@ void sm_off (int event, long value)
       }
       break;
     case EVT_CALL_ROAD:
-      break;
     case EVT_CALL_BASEMENT:
-      break;
     case EVT_CALL_HOUSE:
-      break;
     case EVT_ESTOP:
       break;
   }

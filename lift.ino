@@ -2,7 +2,8 @@
 #include <PinChangeInterrupt.h>
 #include <ArduinoQueue.h>
 
-#define NUM_STATES 7
+#define NUM_STATES 5
+#define NUM_EVENTS 7
 #define PIN_LS_ROAD 2
 #define PIN_LS_BASEMENT 3
 #define PIN_LS_HOUSE 4
