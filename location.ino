@@ -6,7 +6,9 @@ static byte lift_location = I_AM_LOST;
 void location_cmd_set (byte cmd)
 {
   EEPROM.write(cmd_addr, cmd);
-  //Serial.println ("Writing command " + event_desc [cmd] + " to EEPROM\n");
+  Serial.print ("Writing command ");
+  Serial.print (event_desc (cmd));
+  Serial.println ("to EEPROM");
 }
 
 void location_set (byte event)
