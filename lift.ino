@@ -6,6 +6,10 @@
 
 #define NUM_STATES 8
 #define NUM_EVENTS 11
+#define SUCCESS 0
+#define FAILURE -1
+
+/* Pin GPIO numbers */
 #define PIN_LS_ROAD 2
 #define PIN_LS_BASEMENT 3
 #define PIN_LS_HOUSE 4
@@ -15,8 +19,6 @@
 #define PIN_ESTOP 8
 #define PIN_FAN_UP 9
 #define PIN_FAN_DOWN 10
-#define SUCCESS 0
-#define FAILURE -1
 #define MOTOR_STOP_TIME 5000
 
 enum events 
