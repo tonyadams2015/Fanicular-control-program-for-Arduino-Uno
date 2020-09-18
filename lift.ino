@@ -81,27 +81,27 @@ const char *event_desc (byte event)
 {
   switch (event)
   {
-    case 1: 
+    case EVT_LS_ROAD: 
       return "Road limit switch";
-   case 2: 
+   case EVT_LS_BASEMENT: 
       return "Basement limit switch";
-   case 3: 
+   case EVT_LS_HOUSE: 
       return "House limit switch";
-   case 4: 
+   case EVT_CALL_ROAD: 
       return "Call road button";
-   case 5: 
+   case EVT_CALL_BASEMENT: 
       return "Call basement button";
-   case 6: 
+   case EVT_CALL_HOUSE: 
       return "Call house button";
-   case 7: 
+   case EVT_ESTOP: 
       return "Estop";
-   case 8: 
+   case EVT_CALL_ROAD_LONG: 
       return "Call road button long";
-   case 9: 
+   case EVT_CALL_BASEMENT_LONG: 
       return "Call basement button long";
-   case 10: 
+   case EVT_CALL_HOUSE_LONG: 
       return "Call house button long";
-   case 11: 
+   case EVT_LIFT_STOPPED: 
       return "Stopped";
   }
 }
@@ -110,9 +110,9 @@ const char *switch_state_desc (byte state)
 {
   switch (state)
   {
-    case 0:
+    case LOW:
       return "activated";
-    case 1:
+    case HIGH:
       return "deactivated";
   }
 };
@@ -121,21 +121,21 @@ const char *state_desc (byte state)
 {
   switch (state)
   {
-    case 0:
+    case ESTOPPED:
       return "Emergency stop state";
-    case 1:
+    case OFF:
       return "Off state";
-    case 2:
+    case TRAIN:
       return "Train state";
-    case 3:
+    case IDLE:
       return "Idle state";
-    case 4:
+    case UP:
       return "Up state";
-    case 5:
+    case DOWN:
       return "Down state";
-    case 6:
+    case MANUAL:
       return "Manual state";
-    case 7:
+    case STOPPING:
       return "Stopping state";
   }
 }
@@ -144,15 +144,14 @@ const char *location_desc (byte location)
 { 
   switch (location)
   {
-    case 0:
+    case I_AM_LOST:
       return "I am lost";
-    case 1:
+    case ROAD:
       return "Road";
-    case 2:
+    case BASEMENT:
       return "Basement";
-    case 3:
+    case HOUSE:
       return "House";
-      
   }
 }
 
