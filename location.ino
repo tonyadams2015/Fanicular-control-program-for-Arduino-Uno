@@ -6,14 +6,16 @@ static byte lift_location = I_AM_LOST;
 void location_cmd_set (byte cmd)
 {
   EEPROM.write(cmd_addr, cmd);
-  Serial.println ("Writing command " + event_desc [cmd] + " to EEPROM\n");
+  //Serial.println ("Writing command " + event_desc [cmd] + " to EEPROM\n");
 }
 
 void location_set (byte event)
 {
   lift_location = event;
   EEPROM.write(loc_addr, event);
-  Serial.println ("Writing new location " + location_desc [event] + " to EEPROM\n");
+  Serial.print ("Writing new location ");
+  Serial.print (location_desc (event));
+  Serial.println ("to EEPROM");
 }
 
 int location_load (void)
@@ -25,7 +27,7 @@ int location_load (void)
   if (lift_location >= LOCATION_MAX)
   {
     Serial.println ("Could not load location - EEPROM Failure\n");
-    return -1;
+    return FAILURE;
   }
   
   last_cmd = EEPROM.read(cmd_addr);
@@ -33,7 +35,7 @@ int location_load (void)
   if (last_cmd > EVT_MAX)
   {
     Serial.println ("Could not load last command - EEPROM Failure\n");
-    return -1;
+    return FAILURE;
   }
 
   /* Are command and location consistent */
@@ -61,7 +63,10 @@ int location_load (void)
       break;
   }
 
-  Serial.println ("We are at the " + location_desc [lift_location] + "\n");
+  Serial.print ("We are at the ");
+  Serial.println (location_desc (lift_location));
+
+ return SUCCESS;
 }
 
 int location_get ()

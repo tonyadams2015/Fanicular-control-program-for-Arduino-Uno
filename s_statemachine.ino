@@ -19,18 +19,7 @@ void (*sm_cb [NUM_STATES])(int, long) =   {sm_estop,
                                            sm_stopping};
 
 void (*sm_exit_cb [NUM_STATES])(void) = {};
-                            
-String state_desc [NUM_STATES] = {"Emergency stop state",
-                                  "Off state",
-                                  "Train state",
-                                  "Idle state",
-                                  "Up state",
-                                  "Down state",
-                                  "Manual state",
-                                  "Stopping state"};
-
-String switch_state_desc [2] = {"activated", "deactivated"};
-                                          
+                                                           
 void sm_init (void)                              
 {
   sm_next_state (OFF);
@@ -38,8 +27,11 @@ void sm_init (void)
 
 void sm_event_send (int event, long value)
 {
-  Serial.println ("Processing " +  event_desc [event] + " = " + switch_state_desc [value] + "\n");
-
+  Serial.print ("Processing ");
+  Serial.print (event_desc (event));
+  Serial.print (" = ");
+  Serial.println (switch_state_desc (value));
+  
   switch (event)
   {
     case EVT_LS_ROAD:
@@ -87,7 +79,9 @@ void sm_enter (void)
 {
   if (sm_enter_cb [sm_curr_state] != NULL)
   {
-    Serial.println ("Entering " + state_desc[sm_get_curr_state ()] + "\n");
+    Serial.print ("Entering ");
+    Serial.println (state_desc (sm_get_curr_state ()));
+    
     sm_enter_cb [sm_curr_state] ();
   }
 }

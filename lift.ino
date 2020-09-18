@@ -19,30 +19,41 @@
 #define FAILURE -1
 #define MOTOR_STOP_TIME 5000
 
-enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
-             EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_CALL_ROAD_LONG,
-             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG, EVT_LIFT_STOPPED, EVT_MAX};
+enum events 
+{
+  EVT_LS_ROAD = 1,
+  EVT_LS_BASEMENT,
+  EVT_LS_HOUSE,
+  EVT_CALL_ROAD,
+  EVT_CALL_BASEMENT,
+  EVT_CALL_HOUSE,
+  EVT_ESTOP,
+  EVT_CALL_ROAD_LONG,
+  EVT_CALL_BASEMENT_LONG,
+  EVT_CALL_HOUSE_LONG,
+  EVT_LIFT_STOPPED,
+  EVT_MAX};
 
-enum states {ESTOPPED, OFF, TRAIN, IDLE, UP, DOWN, MANUAL, STOPPING};
+enum states
+{
+  ESTOPPED,
+  OFF,
+  TRAIN,
+  IDLE,
+  UP,
+  DOWN,
+  MANUAL,
+  STOPPING
+};
 
-enum locations {I_AM_LOST, ROAD, BASEMENT, HOUSE, LOCATION_MAX};
-
-String event_desc [NUM_EVENTS + 1] =
-  {"",
-   "Road limit switch",
-   "Basement limit switch",
-   "House limit switch",
-   "Call road button",
-   "Call basement button",
-   "Call house button",
-   "Estop",
-   "Call road button long",
-   "Call basement button long",
-   "Call house button long",
-   "Stopped"
-   };
-
-String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
+enum locations 
+{
+  I_AM_LOST,
+  ROAD, 
+  BASEMENT, 
+  HOUSE, 
+  LOCATION_MAX
+};
 
 SimpleTimer timer;
 
@@ -62,6 +73,85 @@ void setup() {
 void loop()
 {
   timer.run ();
+}
+
+const char *event_desc (byte event)
+{
+  switch (event)
+  {
+    case 1: 
+      return "Road limit switch";
+   case 2: 
+      return "Basement limit switch";
+   case 3: 
+      return "House limit switch";
+   case 4: 
+      return "Call road button";
+   case 5: 
+      return "Call basement button";
+   case 6: 
+      return "Call house button";
+   case 7: 
+      return "Estop";
+   case 8: 
+      return "Call road button long";
+   case 9: 
+      return "Call basement button long";
+   case 10: 
+      return "Call house button long";
+   case 11: 
+      return "Stopped";
+  }
+}
+
+const char *switch_state_desc (byte state) 
+{
+  switch (state)
+  {
+    case 0:
+      return "activated";
+    case 1:
+      return "deactivated";
+  }
+};
+
+const char *state_desc (byte state) 
+{
+  switch (state)
+  {
+    case 0:
+      return "Emergency stop state";
+    case 1:
+      return "Off state";
+    case 2:
+      return "Train state";
+    case 3:
+      return "Idle state";
+    case 4:
+      return "Up state";
+    case 5:
+      return "Down state";
+    case 6:
+      return "Manual state";
+    case 7:
+      return "Stopping state";
+  }
+}
+
+const char *location_desc (byte location)
+{ 
+  switch (location)
+  {
+    case 0:
+      return "I am lost";
+    case 1:
+      return "Road";
+    case 2:
+      return "Basement";
+    case 3:
+      return "House";
+      
+  }
 }
 
 void lift_stop (void)
