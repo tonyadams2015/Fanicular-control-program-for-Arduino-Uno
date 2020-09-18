@@ -8,7 +8,7 @@ void location_cmd_set (byte cmd)
   EEPROM.write(cmd_addr, cmd);
   Serial.print ("Writing command ");
   Serial.print (event_desc (cmd));
-  Serial.println ("to EEPROM");
+  Serial.println (" to EEPROM");
 }
 
 void location_set (byte event)
@@ -17,7 +17,7 @@ void location_set (byte event)
   EEPROM.write(loc_addr, event);
   Serial.print ("Writing new location ");
   Serial.print (location_desc (event));
-  Serial.println ("to EEPROM");
+  Serial.println (" to EEPROM");
 }
 
 int location_load (void)
@@ -84,41 +84,42 @@ int location_get ()
   return lift_location;
 }
 
-byte how_to_move_to_location (byte location)
+byte how_to_move_to_location (byte location_cmd)
 {
-  switch (location)
+  switch (location_cmd)
   {
     case EVT_CALL_ROAD:
       switch (lift_location)
       {
-        case EVT_LS_ROAD:
+        case ROAD:
           return IDLE;
-        case EVT_LS_BASEMENT:
-        case EVT_LS_HOUSE:
+        case BASEMENT:
+        case HOUSE:
           return DOWN; 
       }
     case EVT_CALL_BASEMENT:
       switch (lift_location)
       {
-        case EVT_LS_ROAD:
+        case ROAD:
           return UP;
-        case EVT_LS_BASEMENT:
+        case BASEMENT:
           return IDLE;
-        case EVT_LS_HOUSE:
+        case HOUSE:
           return DOWN; 
       }
       case EVT_CALL_HOUSE:
       switch (lift_location)
       {
-        case EVT_LS_ROAD:
+        case ROAD:
           return UP;
-        case EVT_LS_BASEMENT:
+        case BASEMENT:
           return UP;
-        case EVT_LS_HOUSE:
+        case HOUSE:
           return IDLE; 
       }
       default:
-        Serial.print ("No such location ");
-        Serial.println (location);
+        Serial.print ("No such command ");
+        Serial.println (location_cmd);
+        return IDLE;
   }
 }

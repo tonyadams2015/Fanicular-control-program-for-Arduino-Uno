@@ -61,7 +61,7 @@ SimpleTimer timer;
 
 void setup() {
   Serial.begin(9600);  
-  Serial.println("--- Start Serial Monitor\n");
+  Serial.println("Lift starting...");
 
   if (location_load () != SUCCESS)
   {
