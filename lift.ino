@@ -70,6 +70,8 @@ void setup() {
   
   pins_init ();
   sm_init ();
+
+  tests_run ();
 }
 
 void loop()
