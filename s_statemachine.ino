@@ -243,17 +243,10 @@ void sm_idle (int event, long value)
   
   switch (event)
   {
-    case EVT_LS_ROAD:
-    case EVT_LS_BASEMENT:
-    case EVT_LS_HOUSE:
-      break;
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
       sm_next_state (how_to_move_to_location (event));
-      break;
-    case EVT_CALL_ROAD_LONG:   
-    case EVT_CALL_BASEMENT_LONG:
       break;
     case EVT_CALL_HOUSE_LONG:
       if (location_get () == HOUSE)
@@ -279,10 +272,6 @@ void sm_up (int event, long value)
     case EVT_LS_HOUSE:
       sm_next_state (IDLE);
       break;
-    case EVT_CALL_ROAD:
-    case EVT_CALL_BASEMENT:
-    case EVT_CALL_HOUSE:
-      break;
   }
 }
  
@@ -300,10 +289,6 @@ void sm_down (int event, long value)
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
       sm_next_state (IDLE);
-      break;
-    case EVT_CALL_ROAD:
-    case EVT_CALL_BASEMENT:
-    case EVT_CALL_HOUSE:
       break;
   }
 }
