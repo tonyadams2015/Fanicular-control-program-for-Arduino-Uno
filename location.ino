@@ -61,6 +61,10 @@ int location_load (void)
         lift_location = I_AM_LOST;
       }    
       break;
+    default:
+      Serial.print ("No such command ");
+      Serial.println (last_cmd);
+      return FAILURE;
   }
 
   Serial.print ("We are at the ");
@@ -111,5 +115,8 @@ byte how_to_move_to_location (byte location)
         case EVT_LS_HOUSE:
           return IDLE; 
       }
+      default:
+        Serial.print ("No such location ");
+        Serial.println (location);
   }
 }

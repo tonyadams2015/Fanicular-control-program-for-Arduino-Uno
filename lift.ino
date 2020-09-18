@@ -103,6 +103,9 @@ const char *event_desc (byte event)
       return "Call house button long";
    case EVT_LIFT_STOPPED: 
       return "Stopped";
+   default:
+     Serial.print ("No such event ");
+     Serial.println (event);
   }
 }
 
@@ -114,6 +117,9 @@ const char *switch_state_desc (byte state)
       return "activated";
     case HIGH:
       return "deactivated";
+    default:
+     Serial.print ("No such switch state ");
+     Serial.println (state);
   }
 };
 
@@ -137,6 +143,9 @@ const char *state_desc (byte state)
       return "Manual state";
     case STOPPING:
       return "Stopping state";
+    default:
+      Serial.print ("No such state ");
+      Serial.println (state);
   }
 }
 
@@ -152,6 +161,9 @@ const char *location_desc (byte location)
       return "Basement";
     case HOUSE:
       return "House";
+    default:
+      Serial.print ("No such location ");
+      Serial.println (location);
   }
 }
 
