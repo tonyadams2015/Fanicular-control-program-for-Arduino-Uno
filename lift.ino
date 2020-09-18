@@ -2,9 +2,10 @@
 #include <PinChangeInterrupt.h>
 #include <ArduinoQueue.h>
 #include <EEPROM.h>
+#include <SimpleTimer.h>
 
-#define NUM_STATES 7
-#define NUM_EVENTS 7
+#define NUM_STATES 8
+#define NUM_EVENTS 11
 #define PIN_LS_ROAD 2
 #define PIN_LS_BASEMENT 3
 #define PIN_LS_HOUSE 4
@@ -16,12 +17,13 @@
 #define PIN_FAN_DOWN 10
 #define SUCCESS 0
 #define FAILURE -1
+#define MOTOR_STOP_TIME 5000
 
 enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
              EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_CALL_ROAD_LONG,
-             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG, EVT_MAX};
+             EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG, EVT_LIFT_STOPPED, EVT_MAX};
 
-enum states {ESTOPPED, OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
+enum states {ESTOPPED, OFF, TRAIN, IDLE, UP, DOWN, MANUAL, STOPPING};
 
 enum locations {I_AM_LOST, ROAD, BASEMENT, HOUSE, LOCATION_MAX};
 
@@ -33,9 +35,16 @@ String event_desc [NUM_EVENTS + 1] =
    "Call road button",
    "Call basement button",
    "Call house button",
-   "Estop"};
+   "Estop",
+   "Call road button long",
+   "Call basement button long",
+   "Call house button long",
+   "Stopped"
+   };
 
 String location_desc [4] = {"I am lost", "Road", "Basement", "House"};
+
+SimpleTimer timer;
 
 void setup() {
   Serial.begin(9600);  
@@ -52,6 +61,7 @@ void setup() {
 
 void loop()
 {
+  timer.run ();
 }
 
 void lift_stop (void)
@@ -68,4 +78,14 @@ void lift_up (void)
 void lift_down (void)
 {
   digitalWrite(PIN_FAN_DOWN, LOW);
+}
+
+void lift_stopping (void)
+{
+  timer.setTimeout (MOTOR_STOP_TIME, lift_stopped);
+}
+
+void lift_stopped (void)
+{
+  sm_event_send (EVT_LIFT_STOPPED, 0);
 }
