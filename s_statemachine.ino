@@ -17,16 +17,9 @@ void (*sm_cb [NUM_STATES])(int, long) =   {sm_estop,
                                            sm_down,
                                            sm_manual,
                                            sm_stopping};
-                            
-void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_estop,
-                                          sm_exit_off,
-                                          sm_exit_train,
-                                          sm_exit_idle, 
-                                          sm_exit_up,
-                                          sm_exit_down,
-                                          sm_exit_manual,
-                                          sm_exit_stopping};
 
+void (*sm_exit_cb [NUM_STATES])(void) = {};
+                            
 String state_desc [NUM_STATES] = {"Emergency stop state",
                                   "Off state",
                                   "Train state",
@@ -109,7 +102,7 @@ void sm_update (int event, long value)
 
 void sm_exit (void)
 {
-  if (sm_exit_cb [sm_curr_state] != NULL)
+  if (sm_exit_cb && sm_exit_cb [sm_curr_state] != NULL)
   {
     sm_exit_cb [sm_curr_state] ();
   }
@@ -335,44 +328,4 @@ void sm_stopping (int event, long value)
   {
     sm_next_state (IDLE);
   }
-}
-
-void sm_exit_estop (void)
-{
-  
-}
-
-void sm_exit_off (void)
-{
-  
-}
-
-void sm_exit_train (void)
-{
-  
-}
-
-void sm_exit_idle (void)
-{
-  
-}
-
-void sm_exit_up (void)
-{
-  
-}
-
-void sm_exit_down (void)
-{
-
-}
-
-void sm_exit_manual (void)
-{
-
-}
-
-void sm_exit_stopping (void)
-{
-
 }
