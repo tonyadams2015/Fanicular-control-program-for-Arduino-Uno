@@ -3,7 +3,7 @@
 #include <ArduinoQueue.h>
 #include <EEPROM.h>
 
-#define NUM_STATES 6
+#define NUM_STATES 7
 #define NUM_EVENTS 7
 #define PIN_LS_ROAD 2
 #define PIN_LS_BASEMENT 3
@@ -21,7 +21,7 @@ enum events {EVT_LS_ROAD = 1, EVT_LS_BASEMENT, EVT_LS_HOUSE, EVT_CALL_ROAD,
              EVT_CALL_BASEMENT, EVT_CALL_HOUSE, EVT_ESTOP, EVT_CALL_ROAD_LONG,
              EVT_CALL_BASEMENT_LONG, EVT_CALL_HOUSE_LONG, EVT_MAX};
 
-enum states {OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
+enum states {ESTOPPED, OFF, TRAIN, IDLE, UP, DOWN, MANUAL};
 
 enum locations {I_AM_LOST, ROAD, BASEMENT, HOUSE, LOCATION_MAX};
 

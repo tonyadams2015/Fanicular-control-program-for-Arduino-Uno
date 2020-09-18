@@ -1,27 +1,31 @@
 static int sm_curr_state = OFF;
 
-void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_off,
+void (*sm_enter_cb [NUM_STATES])(void) = {sm_enter_estop,
+                                          sm_enter_off,
                                           sm_enter_train,
                                           sm_enter_idle,
                                           sm_enter_up,
                                           sm_enter_down,
                                           sm_enter_manual};
                                           
-void (*sm_cb [NUM_STATES])(int, long) =   {sm_off,
+void (*sm_cb [NUM_STATES])(int, long) =   {sm_estop,
+                                           sm_off,
                                            sm_train,
                                            sm_idle,
                                            sm_up,
                                            sm_down,
                                            sm_manual};
                             
-void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_off,
+void (*sm_exit_cb [NUM_STATES])(void)  = {sm_exit_estop,
+                                          sm_exit_off,
                                           sm_exit_train,
                                           sm_exit_idle, 
                                           sm_exit_up,
                                           sm_exit_down,
                                           sm_exit_manual};
 
-String state_desc [NUM_STATES] = {"Off state",
+String state_desc [NUM_STATES] = {"Emergency stop state",
+                                  "Off state",
                                   "Train state",
                                   "Idle state",
                                   "Up state",
@@ -57,6 +61,12 @@ void sm_event_send (int event, long value)
       if (value == LOW)
       {
         location_cmd_set (event);
+      }
+      break;
+    case EVT_ESTOP:
+      if (value == HIGH)
+      {
+        sm_next_state (ESTOPPED);
       }
       break;
   }
@@ -101,6 +111,12 @@ void sm_exit (void)
   }
 }
 
+void sm_enter_estop (void)
+{
+  lift_stop ();
+}
+
+
 void sm_enter_off (void)
 {
   lift_stop ();
@@ -143,6 +159,13 @@ void sm_enter_manual (void)
   lift_up ();
 }
 
+void sm_estop (int event, long value)
+{
+  if (event == EVT_ESTOP && value == LOW)
+  {
+    sm_next_state (OFF);
+  }
+}
 
 void sm_off (int event, long value)
 {  
@@ -167,6 +190,17 @@ void sm_off (int event, long value)
       }
       break;
     case EVT_ESTOP:
+      if (value == LOW && check_inputs_ready () == true)
+      {
+        if (location_get () != I_AM_LOST)
+        {
+          sm_next_state (IDLE);
+        }
+        else
+        {
+          sm_next_state (TRAIN);
+        }
+      }
       break;
   }
 }
@@ -195,9 +229,6 @@ void sm_train (int event, long value)
     case EVT_CALL_HOUSE_LONG:
       sm_next_state (UP);
       break;
-    case EVT_ESTOP:
-      sm_next_state (OFF);
-      break;
   }
 }
 
@@ -220,9 +251,6 @@ void sm_idle (int event, long value)
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
       sm_next_state (how_to_move_to_location (event));
-      break;
-    case EVT_ESTOP:
-      sm_next_state (OFF);
       break;
     case EVT_CALL_ROAD_LONG:   
     case EVT_CALL_BASEMENT_LONG:
@@ -255,9 +283,6 @@ void sm_up (int event, long value)
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
       break;
-    case EVT_ESTOP:
-      sm_next_state (OFF);
-      break;
   }
 }
  
@@ -279,9 +304,6 @@ void sm_down (int event, long value)
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
-      break;
-    case EVT_ESTOP:
-      sm_next_state (OFF);
       break;
   }
 }
@@ -311,9 +333,12 @@ void sm_manual (int event, long value)
     case EVT_CALL_HOUSE_LONG:
       lift_up ();
       break;
-    case EVT_ESTOP:
-      sm_next_state (OFF);
   }
+}
+
+void sm_exit_estop (void)
+{
+  
 }
 
 void sm_exit_off (void)
