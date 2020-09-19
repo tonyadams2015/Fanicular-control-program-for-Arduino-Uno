@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#define NUM_TESTS 4
+#define NUM_TESTS 8
 
 typedef struct
 {
@@ -8,17 +8,19 @@ typedef struct
   byte out;
 } test_args_t;
 
-bool test_change_location (byte n);
-bool test_move_up (byte n);
-bool test_ready_to_stop (byte n);
-bool test_stop_at_location (byte n);
+bool test_event_new_location (byte n);
+bool test_event (byte n);
 
 bool (*test_fn [NUM_TESTS])(byte) = 
   {
-    test_change_location,
-    test_move_up,
-    test_ready_to_stop,
-    test_stop_at_location
+    test_event_new_location,
+    test_event,
+    test_event,
+    test_event,
+    test_event,
+    test_event,
+    test_event,
+    test_event,
   };
 
 static test_args_t args [NUM_TESTS] =
@@ -26,7 +28,11 @@ static test_args_t args [NUM_TESTS] =
     {EVT_LS_ROAD, ROAD},
     {EVT_CALL_BASEMENT, UP},
     {EVT_LS_BASEMENT, STOPPING},
-    {EVT_LIFT_STOPPED, IDLE}
+    {EVT_LIFT_STOPPED, IDLE},
+    {EVT_CALL_HOUSE, UP},
+    {EVT_LS_HOUSE, STOPPING},
+    {EVT_LIFT_STOPPED, IDLE},
+    {EVT_CALL_HOUSE_LONG, MANUAL},
   };
 
 byte check (bool test)
@@ -45,7 +51,7 @@ void tests_run ()
 
   for (i = 0; i < NUM_TESTS; i++)
   {
-    if (test_fn [i](i) == true)
+    if (test_fn [i] (i) == true)
     {
       Serial.print ("Test ");
       Serial.print (i);
@@ -60,26 +66,14 @@ void tests_run ()
   }
 }
 
-bool test_change_location (byte n)
+bool test_event_new_location (byte n)
 {
   sm_event_send (args [n].in, 0);
-  return check (location_get () == ROAD);
+  return check (location_get () == args [n].out);
 }
 
-bool test_move_up (byte n)
+bool test_event (byte n)
 {
-  sm_event_send (EVT_CALL_BASEMENT, 0);
-  return check (sm_get_curr_state () == UP);
-}
-
-bool test_ready_to_stop (byte n)
-{
-  sm_event_send (EVT_LS_BASEMENT, 0);
-  return check (sm_get_curr_state () == STOPPING);
-}
-
-bool test_stop_at_location (byte n)
-{
-  sm_event_send (EVT_LIFT_STOPPED, 0);
-  return check (sm_get_curr_state () == IDLE);
+  sm_event_send (args [n].in, 0);
+  return check (sm_get_curr_state () == args [n].out);
 }

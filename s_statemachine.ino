@@ -58,6 +58,8 @@ void sm_event_send (int event, long value)
         sm_next_state (ESTOPPED);
       }
       break;
+    case EVT_LIFT_STOPPED:
+      break;
     default:
       Serial.print ("No such event ");
       Serial.println (event);
