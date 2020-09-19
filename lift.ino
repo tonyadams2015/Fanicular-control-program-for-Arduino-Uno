@@ -65,15 +65,16 @@ void setup() {
   Serial.begin(9600);  
   Serial.println("Lift starting...");
 
+  sm_init ();
+  tests_run ();
+
   if (location_load () != SUCCESS)
   {
     return;
   }
-  
+
   pins_init ();
   sm_init ();
-
-  tests_run ();
 }
 
 void loop()

@@ -1,4 +1,4 @@
-#define NUM_TESTS 14
+#define NUM_TESTS 16
 
 typedef struct
 {
@@ -10,6 +10,8 @@ typedef struct
 bool (*test_fn [NUM_TESTS])(byte) = 
   {
     test_event_new_location,
+    test_event,
+    test_event,
     test_event,
     test_event,
     test_event,
@@ -41,6 +43,8 @@ static test_args_t args [NUM_TESTS] =
     {EVT_CALL_ROAD_LONG, LOW, MANUAL_DOWN},
     {EVT_LS_HOUSE, LOW, STOPPING},
     {EVT_LIFT_STOPPED, LOW, IDLE},
+    {EVT_ESTOP, HIGH, ESTOPPED},
+    {EVT_ESTOP, LOW, IDLE},
   };
 
 static bool test_mode = false; 
@@ -84,7 +88,7 @@ void tests_run ()
   }
 
   Serial.print ("Tests: ");
-  Serial.print (i+1);
+  Serial.print (i - 1);
   Serial.print (" passed ");
   Serial.print (NUM_TESTS - i);
   Serial.println (" failed");
