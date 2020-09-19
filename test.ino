@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #define NUM_TESTS 8
 
 typedef struct
@@ -7,9 +5,6 @@ typedef struct
   byte in;
   byte out;
 } test_args_t;
-
-bool test_event_new_location (byte n);
-bool test_event (byte n);
 
 bool (*test_fn [NUM_TESTS])(byte) = 
   {
@@ -35,6 +30,13 @@ static test_args_t args [NUM_TESTS] =
     {EVT_CALL_HOUSE_LONG, MANUAL},
   };
 
+static bool test_mode = false; 
+
+bool test_mode_get (void)
+{
+  return  test_mode; 
+}
+
 byte check (bool test)
 {
   if (test)
@@ -48,6 +50,8 @@ byte check (bool test)
 void tests_run ()
 {
   int i;
+
+  test_mode = true;
 
   for (i = 0; i < NUM_TESTS; i++)
   {
@@ -64,6 +68,8 @@ void tests_run ()
       Serial.println (" failed");
     }
   }
+
+   test_mode = false; 
 }
 
 bool test_event_new_location (byte n)
