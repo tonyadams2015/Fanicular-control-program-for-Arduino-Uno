@@ -4,7 +4,6 @@
 #include <EEPROM.h>
 #include <SimpleTimer.h>
 
-#define NUM_STATES 8
 #define NUM_EVENTS 11
 #define SUCCESS 0
 #define FAILURE -1
@@ -44,8 +43,11 @@ enum states
   IDLE,
   UP,
   DOWN,
-  MANUAL,
-  STOPPING
+  MANUAL_UP,
+  MANUAL_DOWN,
+  MANUAL_IDLE,
+  STOPPING,
+  STATE_MAX
 };
 
 enum locations 
@@ -141,8 +143,12 @@ const char *state_desc (byte state)
       return "Up state";
     case DOWN:
       return "Down state";
-    case MANUAL:
-      return "Manual state";
+    case MANUAL_UP:
+      return "Manual up state";
+    case MANUAL_DOWN:
+      return "Manual down state";
+    case MANUAL_IDLE:
+      return "Manual idle";    
     case STOPPING:
       return "Stopping state";
     default:
