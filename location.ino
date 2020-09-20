@@ -1,13 +1,13 @@
 
-static int loc_addr = 0x0;
-static int cmd_addr = 0x01;
+#define LOC_ADDR 0x0
+#define CMD_ADDR 0x01
 static byte lift_location = I_AM_LOST;
 
 void location_cmd_set (byte cmd)
 {
   if (test_mode_get () == false)
   {
-    EEPROM.write(cmd_addr, cmd);
+    EEPROM.write(CMD_ADDR, cmd);
   }
   Serial.print ("Writing command ");
   Serial.print (event_desc (cmd));
@@ -19,7 +19,7 @@ void location_set (byte event)
   lift_location = event;
   if (test_mode_get () == false)
   {
-    EEPROM.write(loc_addr, event);
+    EEPROM.write(LOC_ADDR, event);
   }
   Serial.print ("Writing new location ");
   Serial.print (location_desc (event));
@@ -31,14 +31,14 @@ int location_load (void)
   byte last_cmd;
 
   /* Get location */
-  lift_location = EEPROM.read(loc_addr);
+  lift_location = EEPROM.read(LOC_ADDR);
   if (lift_location >= LOCATION_MAX)
   {
     Serial.println ("Could not load location - EEPROM Failure\n");
     return FAILURE;
   }
   
-  last_cmd = EEPROM.read(cmd_addr);
+  last_cmd = EEPROM.read(CMD_ADDR);
 
   if (last_cmd > EVT_MAX)
   {

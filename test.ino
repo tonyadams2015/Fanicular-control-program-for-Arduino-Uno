@@ -7,7 +7,9 @@ typedef struct
   byte out;
 } test_args_t;
 
-bool (*test_fn [NUM_TESTS])(byte) = 
+typedef bool (*test_fn_t)(byte);
+
+const test_fn_t test_fns [NUM_TESTS] PROGMEM =
   {
     test_event_new_location,
     test_event,
@@ -27,7 +29,7 @@ bool (*test_fn [NUM_TESTS])(byte) =
     test_event,
   };
 
-static test_args_t args [NUM_TESTS] =
+static const test_args_t test_args [NUM_TESTS] PROGMEM =
   {
     {EVT_LS_ROAD, LOW, ROAD},
     {EVT_CALL_BASEMENT, LOW, UP},
@@ -67,43 +69,49 @@ byte check (bool test)
 void tests_run ()
 {
   int i;
+  test_fn_t test_fn;
 
   test_mode = true;
 
   for (i = 0; i < NUM_TESTS; i++)
   {
-    if (test_fn [i] (i) == true)
+    PROGMEM_readAnything (&test_fns [i], test_fn);
+    if (test_fn (i) == true)
     {
-      Serial.print ("Test ");
+      Serial.print (F ("Test "));
       Serial.print (i);
-      Serial.println (" passed");
+      Serial.println (F (" passed"));
     }
     else
     {
-      Serial.print ("Test ");
+      Serial.print (F ("Test "));
       Serial.print (i);
-      Serial.println (" failed");
+      Serial.println (F (" failed"));
       break;
     }
   }
 
-  Serial.print ("Tests: ");
+  Serial.print (F ("Tests: "));
   Serial.print (i - 1);
-  Serial.print (" passed ");
+  Serial.print (F (" passed "));
   Serial.print (NUM_TESTS - i);
-  Serial.println (" failed");
+  Serial.println (F (" failed"));
 
-   test_mode = false; 
+  test_mode = false; 
 }
 
 bool test_event_new_location (byte n)
 {
-  sm_event_send (args [n].event, args [n].value);
-  return check (location_get () == args [n].out);
+  test_args_t args;
+  PROGMEM_readAnything (&test_args [n], args );
+  sm_event_send (args.event, args.value);
+  return check (location_get () == args.out);
 }
 
 bool test_event (byte n)
 {
-  sm_event_send (args [n].event, args [n].value);
-  return check (sm_get_curr_state () == args [n].out);
+  test_args_t args;
+  PROGMEM_readAnything (&test_args [n], args );
+  sm_event_send (args.event, args.value);
+  return check (sm_get_curr_state () == args.out);
 }

@@ -3,6 +3,7 @@
 #include <ArduinoQueue.h>
 #include <EEPROM.h>
 #include <SimpleTimer.h>
+#include <Arduino.h>
 
 #define NUM_EVENTS 11
 #define SUCCESS 0
@@ -63,7 +64,7 @@ SimpleTimer timer;
 
 void setup() {
   Serial.begin(9600);  
-  Serial.println("Lift starting...");
+  Serial.println(F ("Lift starting..."));
 
   sm_init ();
   tests_run ();
@@ -201,3 +202,15 @@ void lift_stopped (void)
 {
   sm_event_send (EVT_LIFT_STOPPED, 0);
 }
+
+template <typename T> void PROGMEM_readAnything (const T * sce, T& dest)
+  {
+  memcpy_P (&dest, sce, sizeof (T));
+  }
+
+template <typename T> T PROGMEM_getAnything (const T * sce)
+  {
+  static T temp;
+  memcpy_P (&temp, sce, sizeof (T));
+  return temp;
+  }

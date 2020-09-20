@@ -31,9 +31,9 @@ void sm_init (void)
 
 void sm_event_send (int event, long value)
 {
-  Serial.print ("Processing ");
+  Serial.print (F ("Processing "));
   Serial.print (event_desc (event));
-  Serial.print (" = ");
+  Serial.print (F (" = "));
   Serial.println (switch_state_desc (value));
   
   switch (event)
@@ -65,7 +65,7 @@ void sm_event_send (int event, long value)
     case EVT_LIFT_STOPPED:
       break;
     default:
-      Serial.print ("No such event ");
+      Serial.print (F ("No such event "));
       Serial.println (event);
   }
   
@@ -84,18 +84,18 @@ void sm_next_state (int new_state)
   sm_enter ();
 }
 
-void sm_enter (void)
+static void sm_enter (void)
 {
   if (sm_enter_cb [sm_curr_state] != NULL)
   {
-    Serial.print ("Entering ");
+    Serial.print (F ("Entering "));
     Serial.println (state_desc (sm_get_curr_state ()));
     
     sm_enter_cb [sm_curr_state] ();
   }
 }
 
-void sm_update (int event, long value)
+static void sm_update (int event, long value)
 {
   if (sm_cb [sm_curr_state] != NULL)
   {
@@ -103,7 +103,7 @@ void sm_update (int event, long value)
   }
 }
 
-void sm_exit (void)
+static void sm_exit (void)
 {
   if (sm_exit_cb && sm_exit_cb [sm_curr_state] != NULL)
   {
@@ -111,13 +111,13 @@ void sm_exit (void)
   }
 }
 
-void sm_enter_estop (void)
+static void sm_enter_estop (void)
 {
   lift_stop ();
 }
 
 
-void sm_enter_off (void)
+static void sm_enter_off (void)
 {
   lift_stop ();
   
@@ -134,46 +134,46 @@ void sm_enter_off (void)
   }
 }
 
-void sm_enter_train (void)
+static void sm_enter_train (void)
 {
   lift_stop ();
 }
 
-void sm_enter_idle (void)
+static void sm_enter_idle (void)
 {
   lift_stop ();
 }
 
-void sm_enter_up (void)
+static void sm_enter_up (void)
 {
   lift_up ();
 }
 
-void sm_enter_down (void)
+static void sm_enter_down (void)
 {
   lift_down ();
 }
 
-void sm_enter_manual_up (void)
+static void sm_enter_manual_up (void)
 {
   lift_up ();
 }
 
-void sm_enter_manual_down (void)
+static void sm_enter_manual_down (void)
 {
   lift_down ();
 }
 
-void sm_enter_manual_idle (void)
+static void sm_enter_manual_idle (void)
 {
   lift_stop ();
 }
 
-void sm_enter_stopping (void)
+static void sm_enter_stopping (void)
 {
 }
 
-void sm_estop (int event, long value)
+static void sm_estop (int event, long value)
 {
   if (event == EVT_ESTOP && value == LOW)
   {
@@ -181,7 +181,7 @@ void sm_estop (int event, long value)
   }
 }
 
-void sm_off (int event, long value)
+static void sm_off (int event, long value)
 {  
   switch (event)
   {
@@ -219,7 +219,7 @@ void sm_off (int event, long value)
   }
 }
 
-void sm_train (int event, long value)
+static void sm_train (int event, long value)
 {
   if (value == HIGH)
   {
@@ -246,7 +246,7 @@ void sm_train (int event, long value)
   }
 }
 
-void sm_idle (int event, long value)
+static void sm_idle (int event, long value)
 {
   byte next;
   if (value == HIGH)
@@ -271,7 +271,7 @@ void sm_idle (int event, long value)
   }
 }
 
-void sm_up (int event, long value)
+static void sm_up (int event, long value)
 {
   if (value == HIGH)
   {
@@ -289,7 +289,7 @@ void sm_up (int event, long value)
   }
 }
  
-void sm_down (int event, long value)
+static void sm_down (int event, long value)
 {
   if (value == HIGH)
   {
@@ -309,7 +309,7 @@ void sm_down (int event, long value)
 
 /* Only available above HOUSE
  */
-void sm_manual_up (int event, long value)
+static void sm_manual_up (int event, long value)
 {
   switch (event)
   {
@@ -329,7 +329,7 @@ void sm_manual_up (int event, long value)
   }
 }
 
-void sm_manual_down (int event, long value)
+static void sm_manual_down (int event, long value)
 {
   switch (event)
   {
@@ -349,7 +349,7 @@ void sm_manual_down (int event, long value)
   }
 }
 
-void sm_manual_idle (int event, long value)
+static void sm_manual_idle (int event, long value)
 {
   switch (event)
   {
@@ -367,7 +367,7 @@ void sm_manual_idle (int event, long value)
   }
 }
 
-void sm_stopping (int event, long value)
+static void sm_stopping (int event, long value)
 {
   if (event == EVT_LIFT_STOPPED)
   {

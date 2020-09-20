@@ -21,16 +21,16 @@ typedef struct input_state
   int on_count;
 } input_state_t;
 
-static input_config_t icfg [NUM_INPUT_PINS] = 
+static const input_config_t icfg [NUM_INPUT_PINS] PROGMEM = 
   {{},
    {},
-   {PIN_LS_ROAD, true, HIGH, false, CHANGE, pin_ls_road_isr, EVT_LS_ROAD},
+   {PIN_LS_ROAD, true, HIGH, false, CHANGE , pin_ls_road_isr, EVT_LS_ROAD},
    {PIN_LS_BASEMENT, true, HIGH, false, CHANGE, pin_ls_basement_isr, EVT_LS_BASEMENT},
    {PIN_LS_HOUSE, true, HIGH, false, CHANGE, pin_ls_house_isr, EVT_LS_HOUSE},
    {PIN_CALL_ROAD, true, HIGH, false, CHANGE, pin_call_road_isr, EVT_CALL_ROAD},
    {PIN_CALL_BASEMENT, true, HIGH, false, CHANGE, pin_call_basement_isr, EVT_CALL_BASEMENT},
    {PIN_CALL_HOUSE, true, HIGH, false, CHANGE, pin_call_house_isr, EVT_CALL_HOUSE},
-   {PIN_ESTOP, true, HIGH, false, CHANGE, pin_estop_isr, EVT_ESTOP},
+   {PIN_ESTOP, true, HIGH, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
    {}};
 
 ArduinoQueue<int> event_queue(10);
@@ -52,13 +52,15 @@ void pins_init (void)
   MsTimer2::set(DEBOUNCE_TIME, process_inputs);
   MsTimer2::start();
   int pin;
+  input_config_t cfg;
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
   {
-    if (icfg[pin].valid)
+    if (cfg.valid)
     {
-      pinMode (icfg[pin].pin, INPUT);
-      attachPCINT(digitalPinToPCINT(icfg[pin].pin), icfg[pin].isr ,icfg[pin].trigger);
+      PROGMEM_readAnything (&icfg [pin], cfg);
+      pinMode (cfg.pin, INPUT);
+      attachPCINT(digitalPinToPCINT(cfg.pin), cfg.isr ,cfg.trigger);
       istate[pin].val = digitalRead (pin);
     }
   }
@@ -69,19 +71,22 @@ void pins_init (void)
   digitalWrite(PIN_FAN_DOWN, HIGH);
 }
 
-void process_interrupt (int pin)
+static void process_interrupt (int pin)
 {
   event_queue.enqueue (pin);
 }
 
-void process_inputs (void)
+static void process_inputs (void)
 {
   int pin = 0;
   bool val;
+  input_config_t cfg;
+  
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
   {
-    if (icfg[pin].valid == false)
+    PROGMEM_readAnything (&icfg [pin], cfg);
+    if (cfg.valid == false)
     {
       continue;  
     }
@@ -96,11 +101,11 @@ void process_inputs (void)
         istate[pin].debounce_active = false;
         if (val == LOW)
         {
-          sm_event_send (icfg[pin].event, 0);
+          sm_event_send (cfg.event, 0);
         }
         else
         {
-          sm_event_send (icfg[pin].event, 1);
+          sm_event_send (cfg.event, 1);
         }
       }
       else
@@ -110,9 +115,9 @@ void process_inputs (void)
     }
 
     /* Look for long button presses */
-    if ((icfg[pin].pin == PIN_CALL_HOUSE ||
-        icfg[pin].pin == PIN_CALL_BASEMENT ||
-        icfg[pin].pin == PIN_CALL_ROAD) &&
+    if ((cfg.pin == PIN_CALL_HOUSE ||
+        cfg.pin == PIN_CALL_BASEMENT ||
+        cfg.pin == PIN_CALL_ROAD) &&
         istate[pin].val == LOW)
     {
       istate[pin].on_count ++;
@@ -120,7 +125,7 @@ void process_inputs (void)
       {
         istate[pin].on_count = 0;
 
-        switch (icfg[pin].pin)
+        switch (cfg.pin)
         {
           case PIN_CALL_HOUSE:
             sm_event_send (EVT_CALL_HOUSE_LONG, 0);
@@ -150,21 +155,23 @@ void process_inputs (void)
   }
 }
 
-byte get_pin_state (byte pin)
+static byte get_pin_state (byte pin)
 {
   return istate[pin].val;
 }
 
 /* Check all limit switches and buttons off  */
-bool check_inputs_ready (void)
+static bool check_inputs_ready (void)
 {
   int pin;
+  input_config_t cfg;
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin ++)
   {
-    if (icfg[pin].valid == true && istate[pin].val != HIGH)
+    PROGMEM_readAnything (&icfg [pin], cfg);
+    if (cfg.valid == true && istate[pin].val != HIGH)
     {
-      Serial.println ("Error: switch or button on during boot - maybe wiring or device failure\n");
+      Serial.println (F ("Error: switch or button on during boot - maybe wiring or device failure\n"));
       return false;
     }
   }
@@ -172,37 +179,37 @@ bool check_inputs_ready (void)
   return true;
 }
 
-void pin_ls_road_isr ()
+static void pin_ls_road_isr ()
 {
   process_interrupt (PIN_LS_ROAD);
 }
 
-void pin_ls_basement_isr ()
+static void pin_ls_basement_isr ()
 {
   process_interrupt (PIN_LS_BASEMENT);
 }
 
-void pin_ls_house_isr (void)
+static void pin_ls_house_isr (void)
 {
   process_interrupt (PIN_LS_HOUSE);
 }
 
-void pin_call_road_isr ()
+static void pin_call_road_isr ()
 {
   process_interrupt (PIN_CALL_ROAD);
 }
 
-void pin_call_basement_isr ()
+static void pin_call_basement_isr ()
 {
   process_interrupt (PIN_CALL_BASEMENT);
 }
 
-void pin_call_house_isr ()
+static void pin_call_house_isr ()
 {
   process_interrupt (PIN_CALL_HOUSE);
 }
 
-void pin_estop_isr ()
+static void pin_estop_isr ()
 {
   process_interrupt (PIN_ESTOP);
 }
