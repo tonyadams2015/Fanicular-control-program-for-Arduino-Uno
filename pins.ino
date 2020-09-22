@@ -1,5 +1,5 @@
 
-#define NUM_INPUT_PINS 10
+#define NUM_INPUT_PINS 11
 #define DEBOUNCE_TIME 50
 #define LONG_PRESS_COUNT 200
 
@@ -7,7 +7,8 @@ typedef struct input_config
 {
   byte pin;
   bool valid;
-  byte val; 
+  byte val;
+  byte pin_mode; 
   bool debounce_active;
   byte trigger;
   void (*isr) (void);
@@ -24,14 +25,15 @@ typedef struct input_state
 static const input_config_t icfg [NUM_INPUT_PINS] PROGMEM = 
   {{},
    {},
-   {PIN_LS_ROAD, true, HIGH, false, CHANGE , pin_ls_road_isr, EVT_LS_ROAD},
-   {PIN_LS_BASEMENT, true, HIGH, false, CHANGE, pin_ls_basement_isr, EVT_LS_BASEMENT},
-   {PIN_LS_HOUSE, true, HIGH, false, CHANGE, pin_ls_house_isr, EVT_LS_HOUSE},
-   {PIN_CALL_ROAD, true, HIGH, false, CHANGE, pin_call_road_isr, EVT_CALL_ROAD},
-   {PIN_CALL_BASEMENT, true, HIGH, false, CHANGE, pin_call_basement_isr, EVT_CALL_BASEMENT},
-   {PIN_CALL_HOUSE, true, HIGH, false, CHANGE, pin_call_house_isr, EVT_CALL_HOUSE},
-   {PIN_ESTOP, true, HIGH, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
-   {}};
+   {PIN_LS_ROAD, true, HIGH, INPUT, false, CHANGE , pin_ls_road_isr, EVT_LS_ROAD},
+   {PIN_LS_BASEMENT, true, HIGH, INPUT, false, CHANGE, pin_ls_basement_isr, EVT_LS_BASEMENT},
+   {PIN_LS_HOUSE, true, HIGH, INPUT, false, CHANGE, pin_ls_house_isr, EVT_LS_HOUSE},
+   {PIN_CALL_ROAD, true, HIGH, INPUT, false, CHANGE, pin_call_road_isr, EVT_CALL_ROAD},
+   {PIN_CALL_BASEMENT, true, HIGH, INPUT, false, CHANGE, pin_call_basement_isr, EVT_CALL_BASEMENT},
+   {PIN_CALL_HOUSE, true, HIGH, INPUT, false, CHANGE, pin_call_house_isr, EVT_CALL_HOUSE},
+   {PIN_ESTOP, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
+   {PIN_MAN_UP, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
+   {PIN_MAN_DOWN, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP}};
 
 ArduinoQueue<int> event_queue(10);
 
@@ -45,7 +47,8 @@ static input_state_t istate [NUM_INPUT_PINS] =
    {HIGH, false, 0},
    {HIGH, false, 0},
    {HIGH, false, 0},
-   {}};
+   {HIGH, false, 0},
+   {HIGH, false, 0}};
 
 void pins_init (void)
 { 
@@ -59,7 +62,7 @@ void pins_init (void)
     if (cfg.valid)
     {
       PROGMEM_readAnything (&icfg [pin], cfg);
-      pinMode (cfg.pin, INPUT);
+      pinMode (cfg.pin, cfg.pin_mode);
       attachPCINT(digitalPinToPCINT(cfg.pin), cfg.isr ,cfg.trigger);
       istate[pin].val = digitalRead (pin);
     }
@@ -171,7 +174,9 @@ static bool check_inputs_ready (void)
     PROGMEM_readAnything (&icfg [pin], cfg);
     if (cfg.valid == true && istate[pin].val != HIGH)
     {
-      Serial.println (F ("Error: switch or button on during boot - maybe wiring or device failure\n"));
+      Serial.print (F ("Error: switch or button on during boot - "));
+      Serial.print (F ("Failed on pin "));
+      Serial.println (pin);
       return false;
     }
   }

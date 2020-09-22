@@ -8,7 +8,6 @@ void (*sm_enter_cb [STATE_MAX])(void) = {sm_enter_estop,
                                           sm_enter_down,
                                           sm_enter_manual_up,
                                           sm_enter_manual_down,
-                                          sm_enter_manual_idle,
                                           sm_enter_stopping};
                                           
 void (*sm_cb [STATE_MAX])(int, long) =   {sm_estop,
@@ -19,7 +18,6 @@ void (*sm_cb [STATE_MAX])(int, long) =   {sm_estop,
                                            sm_down,
                                            sm_manual_up,
                                            sm_manual_down,
-                                           sm_manual_idle,
                                            sm_stopping};
 
 void (*sm_exit_cb [STATE_MAX])(void) = {};
@@ -63,6 +61,9 @@ void sm_event_send (int event, long value)
       }
       break;  
     case EVT_LIFT_STOPPED:
+      break;
+    case EVT_LIFT_MAN_UP:
+    case EVT_LIFT_MAN_DOWN:
       break;
     default:
       Serial.print (F ("No such event "));
@@ -164,11 +165,6 @@ static void sm_enter_manual_down (void)
   lift_down ();
 }
 
-static void sm_enter_manual_idle (void)
-{
-  lift_stop ();
-}
-
 static void sm_enter_stopping (void)
 {
 }
@@ -262,12 +258,12 @@ static void sm_idle (int event, long value)
     case EVT_CALL_HOUSE:
       sm_next_state (how_to_move_to_location (event));
       break;
-    case EVT_CALL_HOUSE_LONG:
-      if (location_get () == HOUSE)
-      {
-        sm_next_state (MANUAL_UP);
-      }
+    case EVT_LIFT_MAN_UP:
+      sm_next_state (MANUAL_UP);
       break;
+    case EVT_LIFT_MAN_DOWN:
+      sm_next_state (MANUAL_DOWN);
+      break;     
   }
 }
 
@@ -314,16 +310,13 @@ static void sm_manual_up (int event, long value)
   switch (event)
   {
     case EVT_LS_ROAD:
-    case EVT_LS_BASEMENT:
-    case EVT_LS_HOUSE:
       sm_next_state (STOPPING);
       break;
-    case EVT_CALL_ROAD:
-    case EVT_CALL_HOUSE:
+    case EVT_LIFT_MAN_UP:
       /* Button released */
       if (value == HIGH)
       {
-         sm_next_state (MANUAL_IDLE);
+         sm_next_state (STOPPING);
       }
       break;
   }
@@ -334,16 +327,13 @@ static void sm_manual_down (int event, long value)
   switch (event)
   {
     case EVT_LS_ROAD:
-    case EVT_LS_BASEMENT:
-    case EVT_LS_HOUSE:
       sm_next_state (STOPPING);
       break;
-    case EVT_CALL_ROAD:
-    case EVT_CALL_HOUSE:
+    case EVT_LIFT_MAN_DOWN:
       /* Button released */
       if (value == HIGH)
       {
-        sm_next_state (MANUAL_IDLE);
+        sm_next_state (STOPPING);
       }
       break;
   }

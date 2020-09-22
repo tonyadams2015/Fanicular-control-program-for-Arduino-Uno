@@ -1,4 +1,4 @@
-#define NUM_TESTS 16
+#define NUM_TESTS 15
 
 typedef struct
 {
@@ -26,7 +26,6 @@ const test_fn_t test_fns [NUM_TESTS] PROGMEM =
     test_event,
     test_event,
     test_event,
-    test_event,
   };
 
 static const test_args_t test_args [NUM_TESTS] PROGMEM =
@@ -38,12 +37,11 @@ static const test_args_t test_args [NUM_TESTS] PROGMEM =
     {EVT_CALL_HOUSE, LOW, UP},
     {EVT_LS_HOUSE, LOW, STOPPING},
     {EVT_LIFT_STOPPED, LOW, IDLE},
-    {EVT_CALL_HOUSE_LONG, LOW, MANUAL_UP},
-    {EVT_CALL_HOUSE, HIGH, MANUAL_IDLE},
-    {EVT_CALL_ROAD_LONG, LOW, MANUAL_DOWN},
-    {EVT_CALL_HOUSE, HIGH, MANUAL_IDLE},
-    {EVT_CALL_ROAD_LONG, LOW, MANUAL_DOWN},
-    {EVT_LS_HOUSE, LOW, STOPPING},
+    {EVT_LIFT_MAN_UP, LOW, MANUAL_UP},
+    {EVT_LIFT_MAN_UP, HIGH, STOPPING},
+    {EVT_LIFT_STOPPED, LOW, IDLE},
+    {EVT_LIFT_MAN_DOWN, LOW, MANUAL_DOWN},
+    {EVT_LIFT_MAN_DOWN, HIGH, STOPPING},
     {EVT_LIFT_STOPPED, LOW, IDLE},
     {EVT_ESTOP, HIGH, ESTOPPED},
     {EVT_ESTOP, LOW, IDLE},
@@ -92,7 +90,7 @@ void tests_run ()
   }
 
   Serial.print (F ("Tests: "));
-  Serial.print (i - 1);
+  Serial.print (i);
   Serial.print (F (" passed "));
   Serial.print (NUM_TESTS - i);
   Serial.println (F (" failed"));

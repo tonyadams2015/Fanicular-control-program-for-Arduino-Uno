@@ -17,8 +17,11 @@
 #define PIN_CALL_BASEMENT 6
 #define PIN_CALL_HOUSE 7
 #define PIN_ESTOP 8
-#define PIN_FAN_UP 9
-#define PIN_FAN_DOWN 10
+#define PIN_MAN_UP 9
+#define PIN_MAN_DOWN 10
+#define PIN_FAN_UP 11
+#define PIN_FAN_DOWN 12
+
 #define MOTOR_STOP_TIME 5000
 
 enum events 
@@ -34,6 +37,8 @@ enum events
   EVT_CALL_BASEMENT_LONG,
   EVT_CALL_HOUSE_LONG,
   EVT_LIFT_STOPPED,
+  EVT_LIFT_MAN_UP,
+  EVT_LIFT_MAN_DOWN,
   EVT_MAX};
 
 enum states
@@ -46,7 +51,6 @@ enum states
   DOWN,
   MANUAL_UP,
   MANUAL_DOWN,
-  MANUAL_IDLE,
   STOPPING,
   STATE_MAX
 };
@@ -109,6 +113,10 @@ const char *event_desc (byte event)
       return "Call house button long";
    case EVT_LIFT_STOPPED: 
       return "Stopped";
+   case EVT_LIFT_MAN_UP: 
+      return "MANUAL UP";
+   case EVT_LIFT_MAN_DOWN: 
+      return "MANUAL DOWN";
    default:
      Serial.print ("No such event ");
      Serial.println (event);
@@ -149,8 +157,6 @@ const char *state_desc (byte state)
       return "Manual up state";
     case MANUAL_DOWN:
       return "Manual down state";
-    case MANUAL_IDLE:
-      return "Manual idle";    
     case STOPPING:
       return "Stopping state";
     default:
