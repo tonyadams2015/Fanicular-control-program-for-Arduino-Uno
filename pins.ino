@@ -59,9 +59,9 @@ void pins_init (void)
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
   {
+    PROGMEM_readAnything (&icfg [pin], cfg);
     if (cfg.valid)
     {
-      PROGMEM_readAnything (&icfg [pin], cfg);
       pinMode (cfg.pin, cfg.pin_mode);
       attachPCINT(digitalPinToPCINT(cfg.pin), cfg.isr ,cfg.trigger);
       istate[pin].val = digitalRead (pin);
