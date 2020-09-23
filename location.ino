@@ -9,9 +9,9 @@ void location_cmd_set (byte cmd)
   {
     EEPROM.write(CMD_ADDR, cmd);
   }
-  Serial.print ("Writing command ");
+  Serial.print (F("Writing command "));
   Serial.print (event_desc (cmd));
-  Serial.println (" to EEPROM");
+  Serial.println (F(" to EEPROM"));
 }
 
 void location_set (byte event)
@@ -21,9 +21,9 @@ void location_set (byte event)
   {
     EEPROM.write(LOC_ADDR, event);
   }
-  Serial.print ("Writing new location ");
+  Serial.print (F("Writing new location "));
   Serial.print (location_desc (event));
-  Serial.println (" to EEPROM");
+  Serial.println (F(" to EEPROM"));
 }
 
 int location_load (void)
@@ -34,7 +34,7 @@ int location_load (void)
   lift_location = EEPROM.read(LOC_ADDR);
   if (lift_location >= LOCATION_MAX)
   {
-    Serial.println ("Could not load location - EEPROM Failure\n");
+    Serial.println (F("Could not load location - EEPROM Failure\n"));
     return FAILURE;
   }
   
@@ -42,7 +42,7 @@ int location_load (void)
 
   if (last_cmd > EVT_MAX)
   {
-    Serial.println ("Could not load last command - EEPROM Failure\n");
+    Serial.println (F("Could not load last command - EEPROM Failure\n"));
     return FAILURE;
   }
 
@@ -70,12 +70,12 @@ int location_load (void)
       }    
       break;
     default:
-      Serial.print ("No such command ");
+      Serial.print (F("No such command "));
       Serial.println (last_cmd);
       return FAILURE;
   }
 
-  Serial.print ("We are at the ");
+  Serial.print (F("We are at the "));
   Serial.println (location_desc (lift_location));
 
  return SUCCESS;
@@ -85,7 +85,7 @@ int location_get ()
 {
   if (lift_location == I_AM_LOST)
   {
-    Serial.println ("I am lost.\n");
+    Serial.println (F("I am lost.\n"));
   }
   return lift_location;
 }
@@ -124,7 +124,7 @@ byte how_to_move_to_location (byte location_cmd)
           return IDLE; 
       }
       default:
-        Serial.print ("No such command ");
+        Serial.print (F("No such command "));
         Serial.println (location_cmd);
         return IDLE;
   }

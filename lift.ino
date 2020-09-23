@@ -87,98 +87,98 @@ void loop()
   timer.run ();
 }
 
-const char *event_desc (byte event)
+String event_desc (byte event)
 {
   switch (event)
   {
     case EVT_LS_ROAD: 
-      return "Road limit switch";
+      return F("Road limit switch");
    case EVT_LS_BASEMENT: 
-      return "Basement limit switch";
+      return F("Basement limit switch");
    case EVT_LS_HOUSE: 
-      return "House limit switch";
+      return F("House limit switch");
    case EVT_CALL_ROAD: 
-      return "Call road button";
+      return F("Call road button");
    case EVT_CALL_BASEMENT: 
-      return "Call basement button";
+      return F("Call basement button");
    case EVT_CALL_HOUSE: 
-      return "Call house button";
+      return F("Call house button");
    case EVT_ESTOP: 
-      return "Estop";
+      return F("Estop");
    case EVT_CALL_ROAD_LONG: 
-      return "Call road button long";
+      return F("Call road button long");
    case EVT_CALL_BASEMENT_LONG: 
-      return "Call basement button long";
+      return F("Call basement button long");
    case EVT_CALL_HOUSE_LONG: 
-      return "Call house button long";
+      return F("Call house button long");
    case EVT_LIFT_STOPPED: 
-      return "Stopped";
+      return F("Stopped");
    case EVT_LIFT_MAN_UP: 
-      return "MANUAL UP";
+      return F("MANUAL UP");
    case EVT_LIFT_MAN_DOWN: 
-      return "MANUAL DOWN";
+      return F("MANUAL DOWN");
    default:
-     Serial.print ("No such event ");
+     Serial.print (F("No such event "));
      Serial.println (event);
   }
 }
 
-const char *switch_state_desc (byte state) 
+String switch_state_desc (byte state) 
 {
   switch (state)
   {
     case LOW:
-      return "activated";
+      return F("activated");
     case HIGH:
-      return "deactivated";
+      return F("deactivated");
     default:
-     Serial.print ("No such switch state ");
+     Serial.print (F("No such switch state "));
      Serial.println (state);
   }
 };
 
-const char *state_desc (byte state) 
+String state_desc (byte state) 
 {
   switch (state)
   {
     case ESTOPPED:
-      return "Emergency stop state";
+      return F("Emergency stop state");
     case OFF:
-      return "Off state";
+      return F("Off state");
     case TRAIN:
-      return "Train state";
+      return F("Train state");
     case IDLE:
-      return "Idle state";
+      return F("Idle state");
     case UP:
-      return "Up state";
+      return F("Up state");
     case DOWN:
-      return "Down state";
+      return F("Down state");
     case MANUAL_UP:
-      return "Manual up state";
+      return F("Manual up state");
     case MANUAL_DOWN:
-      return "Manual down state";
+      return F("Manual down state");
     case STOPPING:
-      return "Stopping state";
+      return F("Stopping state");
     default:
-      Serial.print ("No such state ");
+      Serial.print (F("No such state "));
       Serial.println (state);
   }
 }
 
-const char *location_desc (byte location)
+String location_desc (byte location)
 { 
   switch (location)
   {
     case I_AM_LOST:
-      return "I am lost";
+      return F("I am lost");
     case ROAD:
-      return "Road";
+      return F("Road");
     case BASEMENT:
-      return "Basement";
+      return F("Basement");
     case HOUSE:
-      return "House";
+      return F("House");
     default:
-      Serial.print ("No such location ");
+      Serial.print (F("(No such location "));
       Serial.println (location);
   }
 }
