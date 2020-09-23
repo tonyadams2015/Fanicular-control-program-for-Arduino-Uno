@@ -339,24 +339,6 @@ static void sm_manual_down (int event, long value)
   }
 }
 
-static void sm_manual_idle (int event, long value)
-{
-  switch (event)
-  {
-    case EVT_LS_ROAD:
-    case EVT_LS_BASEMENT:
-    case EVT_LS_HOUSE:
-      sm_next_state (STOPPING);
-      break;
-    case EVT_CALL_ROAD_LONG:
-      sm_next_state (MANUAL_DOWN);
-      break;
-    case EVT_CALL_HOUSE_LONG:
-      sm_next_state (MANUAL_UP);
-      break;
-  }
-}
-
 static void sm_stopping (int event, long value)
 {
   if (event == EVT_LIFT_STOPPED)
