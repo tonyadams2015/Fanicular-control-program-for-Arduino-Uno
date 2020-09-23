@@ -19,8 +19,8 @@
 #define PIN_ESTOP 8
 #define PIN_MAN_UP 9
 #define PIN_MAN_DOWN 10
-#define PIN_FAN_UP 11
-#define PIN_FAN_DOWN 12
+#define PIN_LIFT_UP 11
+#define PIN_LIFT_DOWN 12
 
 #define MOTOR_STOP_TIME 5000
 
@@ -185,18 +185,18 @@ String location_desc (byte location)
 
 void lift_stop (void)
 {
-  digitalWrite(PIN_FAN_UP, HIGH);
-  digitalWrite(PIN_FAN_DOWN, HIGH);
+  digitalWrite(PIN_LIFT_UP, HIGH);
+  digitalWrite(PIN_LIFT_DOWN, HIGH);
 }
 
 void lift_up (void)
 {
-  digitalWrite(PIN_FAN_UP, LOW);
+  digitalWrite(PIN_LIFT_UP, LOW);
 }
 
 void lift_down (void)
 {
-  digitalWrite(PIN_FAN_DOWN, LOW);
+  digitalWrite(PIN_LIFT_DOWN, LOW);
 }
 
 void lift_stopping (void)

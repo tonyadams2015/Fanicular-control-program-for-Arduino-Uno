@@ -68,10 +68,10 @@ void pins_init (void)
     }
   }
 
-  pinMode (PIN_FAN_UP, OUTPUT);
-  pinMode (PIN_FAN_DOWN, OUTPUT);
-  digitalWrite(PIN_FAN_UP, HIGH);
-  digitalWrite(PIN_FAN_DOWN, HIGH);
+  pinMode (PIN_LIFT_UP, OUTPUT);
+  pinMode (PIN_LIFT_DOWN, OUTPUT);
+  digitalWrite(PIN_LIFT_UP, HIGH);
+  digitalWrite(PIN_LIFT_DOWN, HIGH);
 }
 
 static void process_interrupt (int pin)
