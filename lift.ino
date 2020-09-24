@@ -68,7 +68,7 @@ SimpleTimer timer;
 
 void setup() {
   Serial.begin(9600);  
-  Serial.println(F ("Lift starting..."));
+  Serial.println(F ("Lift control program starting..."));
 
   sm_init ();
   tests_run ();

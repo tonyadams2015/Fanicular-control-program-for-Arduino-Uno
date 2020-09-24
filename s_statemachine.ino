@@ -254,9 +254,16 @@ static void sm_idle (int event, long value)
   switch (event)
   {
     case EVT_CALL_ROAD:
+      location_target_set (ROAD);
+      sm_next_state (location_directory ());
+      break;
     case EVT_CALL_BASEMENT:
+      location_target_set (BASEMENT);
+      sm_next_state (location_directory ());
+      break;
     case EVT_CALL_HOUSE:
-      sm_next_state (how_to_move_to_location (event));
+      location_target_set (HOUSE);
+      sm_next_state (location_directory ());
       break;
     case EVT_LIFT_MAN_UP:
       sm_next_state (MANUAL_UP);
@@ -280,7 +287,7 @@ static void sm_up (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      sm_next_state (STOPPING);
+      sm_next_state (location_directory ());
       break;
   }
 }
@@ -298,7 +305,7 @@ static void sm_down (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      sm_next_state (STOPPING);
+      sm_next_state (location_directory ());
       break;
   }
 }

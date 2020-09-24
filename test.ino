@@ -1,4 +1,4 @@
-#define NUM_TESTS 15
+#define NUM_TESTS 19
 
 typedef struct
 {
@@ -26,6 +26,10 @@ const test_fn_t test_fns [NUM_TESTS] PROGMEM =
     test_event,
     test_event,
     test_event,
+    test_event,
+    test_event,
+    test_event,
+    test_event,
   };
 
 static const test_args_t test_args [NUM_TESTS] PROGMEM =
@@ -36,6 +40,10 @@ static const test_args_t test_args [NUM_TESTS] PROGMEM =
     {EVT_LIFT_STOPPED, LOW, IDLE},
     {EVT_CALL_HOUSE, LOW, UP},
     {EVT_LS_HOUSE, LOW, STOPPING},
+    {EVT_LIFT_STOPPED, LOW, IDLE},
+    {EVT_CALL_ROAD, LOW, DOWN},
+    {EVT_LS_BASEMENT, LOW, DOWN},
+    {EVT_LS_ROAD, LOW, STOPPING},
     {EVT_LIFT_STOPPED, LOW, IDLE},
     {EVT_LIFT_MAN_UP, LOW, MANUAL_UP},
     {EVT_LIFT_MAN_UP, HIGH, STOPPING},

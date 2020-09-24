@@ -2,6 +2,7 @@
 #define LOC_ADDR 0x0
 #define CMD_ADDR 0x01
 static byte lift_location = I_AM_LOST;
+static byte location_target = I_AM_LOST;
 
 void location_cmd_set (byte cmd)
 {
@@ -90,30 +91,35 @@ int location_get ()
   return lift_location;
 }
 
-byte how_to_move_to_location (byte location_cmd)
+void location_target_set (byte location)
 {
-  switch (location_cmd)
+  location_target = location;
+}
+
+byte location_directory (void)
+{
+  switch (location_target)
   {
-    case EVT_CALL_ROAD:
+    case ROAD:
       switch (lift_location)
       {
         case ROAD:
-          return IDLE;
+          return STOPPING;
         case BASEMENT:
         case HOUSE:
           return DOWN; 
       }
-    case EVT_CALL_BASEMENT:
+    case BASEMENT:
       switch (lift_location)
       {
         case ROAD:
           return UP;
         case BASEMENT:
-          return IDLE;
+          return STOPPING;
         case HOUSE:
           return DOWN; 
       }
-      case EVT_CALL_HOUSE:
+    case HOUSE:
       switch (lift_location)
       {
         case ROAD:
@@ -121,11 +127,11 @@ byte how_to_move_to_location (byte location_cmd)
         case BASEMENT:
           return UP;
         case HOUSE:
-          return IDLE; 
+          return STOPPING; 
       }
-      default:
+    default:
         Serial.print (F("No such command "));
-        Serial.println (location_cmd);
+        Serial.println (location_target);
         return IDLE;
   }
 }
