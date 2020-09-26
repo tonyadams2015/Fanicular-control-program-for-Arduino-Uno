@@ -38,7 +38,7 @@ void loc_set (byte event)
     EEPROM.write(LOC_ADDR, event);
   }
   Serial.print (F("Writing new location "));
-  Serial.print (location_desc (event));
+  Serial.print (loc_desc (event));
   Serial.println (F(" to EEPROM"));
 }
 
@@ -92,7 +92,7 @@ int loc_load (void)
   }
 
   Serial.print (F("We are at the "));
-  Serial.println (location_desc (lift_location));
+  Serial.println (loc_desc (lift_location));
 
  return SUCCESS;
 }
@@ -151,7 +151,7 @@ byte loc_direction_lookup (void)
   }
 }
 
-String location_desc (byte location)
+String loc_desc (byte location)
 { 
   switch (location)
   {
