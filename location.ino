@@ -150,3 +150,21 @@ byte loc_direction_lookup (void)
         return ST_IDLE;
   }
 }
+
+String location_desc (byte location)
+{ 
+  switch (location)
+  {
+    case LOC_LOST:
+      return F("Lost");
+    case LOC_ROAD:
+      return F("Road");
+    case LOC_BASEMENT:
+      return F("Basement");
+    case LOC_HOUSE:
+      return F("House");
+    default:
+      Serial.print (F("(No such location "));
+      Serial.println (location);
+  }
+}

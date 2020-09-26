@@ -3,7 +3,7 @@
 #define DEBOUNCE_TIME 50
 #define LONG_PRESS_COUNT 200
 
-typedef struct input_config 
+typedef struct pin_input_cfg
 {
   byte pin;
   bool valid;
@@ -13,16 +13,16 @@ typedef struct input_config
   byte trigger;
   void (*isr) (void);
   byte event;
-} input_config_t;
+} pin_input_cfg_t;
 
-typedef struct input_state 
+typedef struct PIN_input_state 
 {
   byte val; 
   bool debounce_active;
   int on_count;
-} input_state_t;
+} pin_input_state_t;
 
-static const input_config_t icfg [NUM_INPUT_PINS] PROGMEM = 
+static const pin_input_cfg_t icfg [NUM_INPUT_PINS] PROGMEM = 
   {{},
    {},
    {PIN_LS_ROAD, true, HIGH, INPUT, false, CHANGE , pin_ls_road_isr, EVT_LS_ROAD},
@@ -37,7 +37,7 @@ static const input_config_t icfg [NUM_INPUT_PINS] PROGMEM =
 
 ArduinoQueue<int> event_queue(10);
 
-static input_state_t istate [NUM_INPUT_PINS] =
+static pin_input_state_t istate [NUM_INPUT_PINS] =
   {{},
    {},
    {HIGH, false, 0},
@@ -52,10 +52,10 @@ static input_state_t istate [NUM_INPUT_PINS] =
 
 void pins_init (void)
 { 
-  MsTimer2::set(DEBOUNCE_TIME, process_inputs);
+  MsTimer2::set(DEBOUNCE_TIME, pin_process_inputs);
   MsTimer2::start();
   int pin;
-  input_config_t cfg;
+  pin_input_cfg_t cfg;
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
   {
@@ -74,16 +74,16 @@ void pins_init (void)
   digitalWrite(PIN_LIFT_DOWN, HIGH);
 }
 
-static void process_interrupt (int pin)
+static void pin_process_irq (int pin)
 {
   event_queue.enqueue (pin);
 }
 
-static void process_inputs (void)
+static void pin_process_inputs (void)
 {
   int pin = 0;
   bool val;
-  input_config_t cfg;
+  pin_input_cfg_t cfg;
   
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin++)
@@ -158,16 +158,16 @@ static void process_inputs (void)
   }
 }
 
-static byte get_pin_state (byte pin)
+static byte pin_get_state (byte pin)
 {
   return istate[pin].val;
 }
 
 /* Check all limit switches and buttons off  */
-static bool check_inputs_ready (void)
+static bool pin_check_ready (void)
 {
   int pin;
-  input_config_t cfg;
+  pin_input_cfg_t cfg;
 
   for (pin = 0; pin < NUM_INPUT_PINS; pin ++)
   {
@@ -186,35 +186,49 @@ static bool check_inputs_ready (void)
 
 static void pin_ls_road_isr ()
 {
-  process_interrupt (PIN_LS_ROAD);
+  pin_process_irq (PIN_LS_ROAD);
 }
 
 static void pin_ls_basement_isr ()
 {
-  process_interrupt (PIN_LS_BASEMENT);
+  pin_process_irq (PIN_LS_BASEMENT);
 }
 
 static void pin_ls_house_isr (void)
 {
-  process_interrupt (PIN_LS_HOUSE);
+  pin_process_irq (PIN_LS_HOUSE);
 }
 
 static void pin_call_road_isr ()
 {
-  process_interrupt (PIN_CALL_ROAD);
+  pin_process_irq (PIN_CALL_ROAD);
 }
 
 static void pin_call_basement_isr ()
 {
-  process_interrupt (PIN_CALL_BASEMENT);
+  pin_process_irq (PIN_CALL_BASEMENT);
 }
 
 static void pin_call_house_isr ()
 {
-  process_interrupt (PIN_CALL_HOUSE);
+  pin_process_irq (PIN_CALL_HOUSE);
 }
 
 static void pin_estop_isr ()
 {
-  process_interrupt (PIN_ESTOP);
+  pin_process_irq (PIN_ESTOP);
 }
+
+String switch_state_desc (byte state) 
+{
+  switch (state)
+  {
+    case LOW:
+      return F("activated");
+    case HIGH:
+      return F("deactivated");
+    default:
+     Serial.print (F("No such switch state "));
+     Serial.println (state);
+  }
+};

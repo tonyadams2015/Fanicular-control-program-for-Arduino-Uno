@@ -21,7 +21,71 @@ void (*sm_cb [ST_STATE_MAX])(int, long) =   {sm_estop,
                                            sm_stopping};
 
 void (*sm_exit_cb [ST_STATE_MAX])(void) = {};
-                                                           
+
+String state_desc (byte state) 
+{
+  switch (state)
+  {
+    case ST_ESTOPPED:
+      return F("Emergency stop state");
+    case ST_OFF:
+      return F("Off state");
+    case ST_TRAIN:
+      return F("Train state");
+    case ST_IDLE:
+      return F("Idle state");
+    case ST_UP:
+      return F("Up state");
+    case ST_DOWN:
+      return F("Down state");
+    case ST_MANUAL_UP:
+      return F("Manual up state");
+    case ST_MANUAL_DOWN:
+      return F("Manual down state");
+    case ST_STOPPING:
+      return F("Stopping state");
+    default:
+      Serial.print (F("No such state "));
+      Serial.println (state);
+  }
+}
+
+String event_desc (byte event)
+{
+  switch (event)
+  {
+    case EVT_LS_ROAD: 
+      return F("Road limit switch");
+   case EVT_LS_BASEMENT: 
+      return F("Basement limit switch");
+   case EVT_LS_HOUSE: 
+      return F("House limit switch");
+   case EVT_CALL_ROAD: 
+      return F("Call road button");
+   case EVT_CALL_BASEMENT: 
+      return F("Call basement button");
+   case EVT_CALL_HOUSE: 
+      return F("Call house button");
+   case EVT_ESTOP: 
+      return F("Estop");
+   case EVT_CALL_ROAD_LONG: 
+      return F("Call road button long");
+   case EVT_CALL_BASEMENT_LONG: 
+      return F("Call basement button long");
+   case EVT_CALL_HOUSE_LONG: 
+      return F("Call house button long");
+   case EVT_LIFT_STOPPED: 
+      return F("Stopped");
+   case EVT_LIFT_MAN_UP: 
+      return F("MANUAL UP");
+   case EVT_LIFT_MAN_DOWN: 
+      return F("MANUAL DOWN");
+   default:
+     Serial.print (F("No such event "));
+     Serial.println (event);
+  }
+}
+
 void sm_init (void)                              
 {
   sm_next_state (ST_OFF);
@@ -121,7 +185,7 @@ static void sm_enter_off (void)
 {
   lift_stop ();
   
-  if (check_inputs_ready () == true)
+  if (pin_check_ready () == true)
   {
     if (loc_get () != LOC_LOST)
     {
@@ -186,7 +250,7 @@ static void sm_off (int event, long value)
     case EVT_CALL_ROAD:
     case EVT_CALL_BASEMENT:
     case EVT_CALL_HOUSE:
-      if (check_inputs_ready () == true)
+      if (pin_check_ready () == true)
       {
         if (loc_get () != LOC_LOST)
         {
@@ -199,7 +263,7 @@ static void sm_off (int event, long value)
       }
       break;
     case EVT_ESTOP:
-      if (value == LOW && check_inputs_ready () == true)
+      if (value == LOW && pin_check_ready () == true)
       {
         if (loc_get () != LOC_LOST)
         {
