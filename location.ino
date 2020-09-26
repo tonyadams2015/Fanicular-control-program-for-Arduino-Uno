@@ -1,10 +1,25 @@
-
 #define LOC_ADDR 0x0
 #define CMD_ADDR 0x01
-static byte lift_location = I_AM_LOST;
-static byte location_target = I_AM_LOST;
+static byte lift_location = LOC_LOST;
+static byte location_target = LOC_LOST;
 
-void location_cmd_set (byte cmd)
+byte loc_convert_event_to_location (byte event)
+{
+  switch (event)
+  {
+    case EVT_LS_ROAD:
+      return LOC_ROAD; 
+    case EVT_LS_BASEMENT:
+      return LOC_BASEMENT;
+    case EVT_LS_HOUSE:
+      return LOC_HOUSE;
+    default:
+      Serial.print (F("No such location "));
+      Serial.println (event_desc (event));
+  }
+}
+
+void loc_cmd_set (byte cmd)
 {
   if (test_mode_get () == false)
   {
@@ -15,9 +30,9 @@ void location_cmd_set (byte cmd)
   Serial.println (F(" to EEPROM"));
 }
 
-void location_set (byte event)
+void loc_set (byte event)
 {
-  lift_location = event;
+  lift_location = loc_convert_event_to_location (event);
   if (test_mode_get () == false)
   {
     EEPROM.write(LOC_ADDR, event);
@@ -27,13 +42,13 @@ void location_set (byte event)
   Serial.println (F(" to EEPROM"));
 }
 
-int location_load (void)
+int loc_load (void)
 {
   byte last_cmd;
 
   /* Get location */
   lift_location = EEPROM.read(LOC_ADDR);
-  if (lift_location >= LOCATION_MAX)
+  if (lift_location >= LOC_MAX)
   {
     Serial.println (F("Could not load location - EEPROM Failure\n"));
     return FAILURE;
@@ -52,22 +67,22 @@ int location_load (void)
   {
     case EVT_CALL_ROAD:
     case EVT_CALL_HOUSE_LONG:
-      if (lift_location != ROAD)
+      if (lift_location != LOC_ROAD)
       {
-        lift_location = I_AM_LOST;
+        lift_location = LOC_LOST;
       }
       break;
     case EVT_CALL_BASEMENT:
-      if (lift_location != BASEMENT)
+      if (lift_location != LOC_BASEMENT)
       {
-        lift_location = I_AM_LOST;
+        lift_location = LOC_LOST;
       }
       break;
     case EVT_CALL_HOUSE:
     case EVT_CALL_ROAD_LONG:
-      if (lift_location != HOUSE)
+      if (lift_location != LOC_HOUSE)
       {
-        lift_location = I_AM_LOST;
+        lift_location = LOC_LOST;
       }    
       break;
     default:
@@ -82,56 +97,56 @@ int location_load (void)
  return SUCCESS;
 }
 
-int location_get ()
+int loc_get ()
 {
-  if (lift_location == I_AM_LOST)
+  if (lift_location == LOC_LOST)
   {
     Serial.println (F("I am lost.\n"));
   }
   return lift_location;
 }
 
-void location_target_set (byte location)
+void loc_target_set (byte location)
 {
   location_target = location;
 }
 
-byte location_directory (void)
+byte loc_direction_lookup (void)
 {
   switch (location_target)
   {
-    case ROAD:
+    case LOC_ROAD:
       switch (lift_location)
       {
-        case ROAD:
-          return STOPPING;
-        case BASEMENT:
-        case HOUSE:
-          return DOWN; 
+        case LOC_ROAD:
+          return ST_STOPPING;
+        case LOC_BASEMENT:
+        case LOC_HOUSE:
+          return ST_DOWN; 
       }
-    case BASEMENT:
+    case LOC_BASEMENT:
       switch (lift_location)
       {
-        case ROAD:
-          return UP;
-        case BASEMENT:
-          return STOPPING;
-        case HOUSE:
-          return DOWN; 
+        case LOC_ROAD:
+          return ST_UP;
+        case LOC_BASEMENT:
+          return ST_STOPPING;
+        case LOC_HOUSE:
+          return ST_DOWN; 
       }
-    case HOUSE:
+    case LOC_HOUSE:
       switch (lift_location)
       {
-        case ROAD:
-          return UP;
-        case BASEMENT:
-          return UP;
-        case HOUSE:
-          return STOPPING; 
+        case LOC_ROAD:
+          return ST_UP;
+        case LOC_BASEMENT:
+          return ST_UP;
+        case LOC_HOUSE:
+          return ST_STOPPING; 
       }
     default:
         Serial.print (F("No such command "));
         Serial.println (location_target);
-        return IDLE;
+        return ST_IDLE;
   }
 }

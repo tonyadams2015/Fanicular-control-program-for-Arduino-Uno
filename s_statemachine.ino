@@ -1,6 +1,6 @@
-static int sm_curr_state = OFF;
+static int sm_curr_state = ST_OFF;
 
-void (*sm_enter_cb [STATE_MAX])(void) = {sm_enter_estop,
+void (*sm_enter_cb [ST_STATE_MAX])(void) = {sm_enter_estop,
                                           sm_enter_off,
                                           sm_enter_train,
                                           sm_enter_idle,
@@ -10,7 +10,7 @@ void (*sm_enter_cb [STATE_MAX])(void) = {sm_enter_estop,
                                           sm_enter_manual_down,
                                           sm_enter_stopping};
                                           
-void (*sm_cb [STATE_MAX])(int, long) =   {sm_estop,
+void (*sm_cb [ST_STATE_MAX])(int, long) =   {sm_estop,
                                            sm_off,
                                            sm_train,
                                            sm_idle,
@@ -20,11 +20,11 @@ void (*sm_cb [STATE_MAX])(int, long) =   {sm_estop,
                                            sm_manual_down,
                                            sm_stopping};
 
-void (*sm_exit_cb [STATE_MAX])(void) = {};
+void (*sm_exit_cb [ST_STATE_MAX])(void) = {};
                                                            
 void sm_init (void)                              
 {
-  sm_next_state (OFF);
+  sm_next_state (ST_OFF);
 }
 
 void sm_event_send (int event, long value)
@@ -41,7 +41,7 @@ void sm_event_send (int event, long value)
     case EVT_LS_HOUSE:
       if (value == LOW)
       {
-        location_set (event);
+        loc_set (event);
       }
       break;
     case EVT_CALL_ROAD:
@@ -51,17 +51,16 @@ void sm_event_send (int event, long value)
     case EVT_CALL_HOUSE_LONG:
       if (value == LOW)
       {
-        location_cmd_set (event);
+        loc_cmd_set (event);
       }
       break;
     case EVT_ESTOP:
       if (value == HIGH)
       {
-        sm_next_state (ESTOPPED);
+        sm_next_state (ST_ESTOPPED);
       }
       break;  
     case EVT_LIFT_STOPPED:
-      break;
     case EVT_LIFT_MAN_UP:
     case EVT_LIFT_MAN_DOWN:
       break;
@@ -124,13 +123,13 @@ static void sm_enter_off (void)
   
   if (check_inputs_ready () == true)
   {
-    if (location_get () != I_AM_LOST)
+    if (loc_get () != LOC_LOST)
     {
-    sm_next_state (IDLE);
+    sm_next_state (ST_IDLE);
     }
     else
     {
-      sm_next_state (TRAIN);
+      sm_next_state (ST_TRAIN);
     }
   }
 }
@@ -173,7 +172,7 @@ static void sm_estop (int event, long value)
 {
   if (event == EVT_ESTOP && value == LOW)
   {
-    sm_next_state (OFF);
+    sm_next_state (ST_OFF);
   }
 }
 
@@ -189,26 +188,26 @@ static void sm_off (int event, long value)
     case EVT_CALL_HOUSE:
       if (check_inputs_ready () == true)
       {
-        if (location_get () != I_AM_LOST)
+        if (loc_get () != LOC_LOST)
         {
-          sm_next_state (IDLE);
+          sm_next_state (ST_IDLE);
         }
         else
         {
-          sm_next_state (TRAIN);
+          sm_next_state (ST_TRAIN);
         }
       }
       break;
     case EVT_ESTOP:
       if (value == LOW && check_inputs_ready () == true)
       {
-        if (location_get () != I_AM_LOST)
+        if (loc_get () != LOC_LOST)
         {
-          sm_next_state (IDLE);
+          sm_next_state (ST_IDLE);
         }
         else
         {
-          sm_next_state (TRAIN);
+          sm_next_state (ST_TRAIN);
         }
       }
       break;
@@ -228,16 +227,16 @@ static void sm_train (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      if (location_get () != I_AM_LOST)
+      if (loc_get () != LOC_LOST)
       {
-        sm_next_state (IDLE);
+        sm_next_state (ST_IDLE);
       }
       break;
     case EVT_CALL_ROAD_LONG:
-      sm_next_state (DOWN);
+      sm_next_state (ST_DOWN);
       break;
     case EVT_CALL_HOUSE_LONG:
-      sm_next_state (UP);
+      sm_next_state (ST_UP);
       break;
   }
 }
@@ -254,22 +253,22 @@ static void sm_idle (int event, long value)
   switch (event)
   {
     case EVT_CALL_ROAD:
-      location_target_set (ROAD);
-      sm_next_state (location_directory ());
+      loc_target_set (LOC_ROAD);
+      sm_next_state (loc_direction_lookup ());
       break;
     case EVT_CALL_BASEMENT:
-      location_target_set (BASEMENT);
-      sm_next_state (location_directory ());
+      loc_target_set (LOC_BASEMENT);
+      sm_next_state (loc_direction_lookup ());
       break;
     case EVT_CALL_HOUSE:
-      location_target_set (HOUSE);
-      sm_next_state (location_directory ());
+      loc_target_set (LOC_HOUSE);
+      sm_next_state (loc_direction_lookup ());
       break;
     case EVT_LIFT_MAN_UP:
-      sm_next_state (MANUAL_UP);
+      sm_next_state (ST_MANUAL_UP);
       break;
     case EVT_LIFT_MAN_DOWN:
-      sm_next_state (MANUAL_DOWN);
+      sm_next_state (ST_MANUAL_DOWN);
       break;     
   }
 }
@@ -287,7 +286,7 @@ static void sm_up (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      sm_next_state (location_directory ());
+      sm_next_state (loc_direction_lookup ());
       break;
   }
 }
@@ -305,7 +304,7 @@ static void sm_down (int event, long value)
     case EVT_LS_ROAD:
     case EVT_LS_BASEMENT:
     case EVT_LS_HOUSE:
-      sm_next_state (location_directory ());
+      sm_next_state (loc_direction_lookup ());
       break;
   }
 }
@@ -317,13 +316,13 @@ static void sm_manual_up (int event, long value)
   switch (event)
   {
     case EVT_LS_ROAD:
-      sm_next_state (STOPPING);
+      sm_next_state (ST_STOPPING);
       break;
     case EVT_LIFT_MAN_UP:
       /* Button released */
       if (value == HIGH)
       {
-         sm_next_state (STOPPING);
+         sm_next_state (ST_STOPPING);
       }
       break;
   }
@@ -334,13 +333,13 @@ static void sm_manual_down (int event, long value)
   switch (event)
   {
     case EVT_LS_ROAD:
-      sm_next_state (STOPPING);
+      sm_next_state (ST_STOPPING);
       break;
     case EVT_LIFT_MAN_DOWN:
       /* Button released */
       if (value == HIGH)
       {
-        sm_next_state (STOPPING);
+        sm_next_state (ST_STOPPING);
       }
       break;
   }
@@ -350,6 +349,6 @@ static void sm_stopping (int event, long value)
 {
   if (event == EVT_LIFT_STOPPED)
   {
-    sm_next_state (IDLE);
+    sm_next_state (ST_IDLE);
   }
 }

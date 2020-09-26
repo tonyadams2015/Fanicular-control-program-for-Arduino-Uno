@@ -43,25 +43,25 @@ enum events
 
 enum states
 {
-  ESTOPPED,
-  OFF,
-  TRAIN,
-  IDLE,
-  UP,
-  DOWN,
-  MANUAL_UP,
-  MANUAL_DOWN,
-  STOPPING,
-  STATE_MAX
+  ST_ESTOPPED,
+  ST_OFF,
+  ST_TRAIN,
+  ST_IDLE,
+  ST_UP,
+  ST_DOWN,
+  ST_MANUAL_UP,
+  ST_MANUAL_DOWN,
+  ST_STOPPING,
+  ST_STATE_MAX
 };
 
 enum locations 
 {
-  I_AM_LOST,
-  ROAD, 
-  BASEMENT, 
-  HOUSE, 
-  LOCATION_MAX
+  LOC_LOST,
+  LOC_ROAD, 
+  LOC_BASEMENT, 
+  LOC_HOUSE, 
+  LOC_MAX
 };
 
 SimpleTimer timer;
@@ -73,7 +73,7 @@ void setup() {
   sm_init ();
   tests_run ();
 
-  if (location_load () != SUCCESS)
+  if (loc_load () != SUCCESS)
   {
     return;
   }
@@ -141,23 +141,23 @@ String state_desc (byte state)
 {
   switch (state)
   {
-    case ESTOPPED:
+    case ST_ESTOPPED:
       return F("Emergency stop state");
-    case OFF:
+    case ST_OFF:
       return F("Off state");
-    case TRAIN:
+    case ST_TRAIN:
       return F("Train state");
-    case IDLE:
+    case ST_IDLE:
       return F("Idle state");
-    case UP:
+    case ST_UP:
       return F("Up state");
-    case DOWN:
+    case ST_DOWN:
       return F("Down state");
-    case MANUAL_UP:
+    case ST_MANUAL_UP:
       return F("Manual up state");
-    case MANUAL_DOWN:
+    case ST_MANUAL_DOWN:
       return F("Manual down state");
-    case STOPPING:
+    case ST_STOPPING:
       return F("Stopping state");
     default:
       Serial.print (F("No such state "));
@@ -169,13 +169,13 @@ String location_desc (byte location)
 { 
   switch (location)
   {
-    case I_AM_LOST:
-      return F("I am lost");
-    case ROAD:
+    case LOC_LOST:
+      return F("Lost");
+    case LOC_ROAD:
       return F("Road");
-    case BASEMENT:
+    case LOC_BASEMENT:
       return F("Basement");
-    case HOUSE:
+    case LOC_HOUSE:
       return F("House");
     default:
       Serial.print (F("(No such location "));
