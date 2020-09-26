@@ -91,7 +91,14 @@ int loc_load (void)
       return FAILURE;
   }
 
-  Serial.print (F("We are at the "));
+  if (lift_location == LOC_LOST)
+  {
+    Serial.print (F("We are "));
+  }
+  else
+  {
+    Serial.print (F("We are at the "));
+  }
   Serial.println (loc_desc (lift_location));
 
  return SUCCESS;
