@@ -63,33 +63,33 @@ int loc_load (void)
   }
 
   /* Are command and location consistent */
-  switch (last_cmd)
-  {
-    case EVT_CALL_ROAD:
-    case EVT_CALL_HOUSE_LONG:
-      if (lift_location != LOC_ROAD)
-      {
-        lift_location = LOC_LOST;
-      }
-      break;
-    case EVT_CALL_BASEMENT:
-      if (lift_location != LOC_BASEMENT)
-      {
-        lift_location = LOC_LOST;
-      }
-      break;
-    case EVT_CALL_HOUSE:
-    case EVT_CALL_ROAD_LONG:
-      if (lift_location != LOC_HOUSE)
-      {
-        lift_location = LOC_LOST;
-      }    
-      break;
-    default:
-      Serial.print (F("No such command "));
-      Serial.println (last_cmd);
-      return FAILURE;
-  }
+//  switch (last_cmd)
+//  {
+//    case EVT_CALL_ROAD:
+//    case EVT_CALL_HOUSE_LONG:
+//      if (lift_location != LOC_ROAD)
+//      {
+//        lift_location = LOC_LOST;
+//      }
+//      break;
+//    case EVT_CALL_BASEMENT:
+//      if (lift_location != LOC_BASEMENT)
+//      {
+//        lift_location = LOC_LOST;
+//      }
+//      break;
+//    case EVT_CALL_HOUSE:
+//    case EVT_CALL_ROAD_LONG:
+//      if (lift_location != LOC_HOUSE)
+//      {
+//        lift_location = LOC_LOST;
+//      }    
+//      break;
+//    default:
+//      Serial.print (F("No such command "));
+//      Serial.println (last_cmd);
+//      return FAILURE;
+//  }
 
   if (lift_location == LOC_LOST)
   {

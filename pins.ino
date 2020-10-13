@@ -32,8 +32,8 @@ static const pin_input_cfg_t icfg [NUM_INPUT_PINS] PROGMEM =
    {PIN_CALL_BASEMENT, true, HIGH, INPUT, false, CHANGE, pin_call_basement_isr, EVT_CALL_BASEMENT},
    {PIN_CALL_HOUSE, true, HIGH, INPUT, false, CHANGE, pin_call_house_isr, EVT_CALL_HOUSE},
    {PIN_ESTOP, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
-   {PIN_MAN_UP, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP},
-   {PIN_MAN_DOWN, true, HIGH, INPUT, false, CHANGE, pin_estop_isr ,EVT_ESTOP}};
+   {PIN_MAN_UP, true, HIGH, INPUT_PULLUP, false, CHANGE, pin_man_up_isr ,EVT_LIFT_MAN_UP},
+   {PIN_MAN_DOWN, true, HIGH, INPUT_PULLUP, false, CHANGE, pin_man_down_isr ,EVT_LIFT_MAN_DOWN}};
 
 ArduinoQueue<int> event_queue(10);
 
@@ -70,8 +70,10 @@ void pins_init (void)
 
   pinMode (PIN_LIFT_UP, OUTPUT);
   pinMode (PIN_LIFT_DOWN, OUTPUT);
-  digitalWrite(PIN_LIFT_UP, HIGH);
-  digitalWrite(PIN_LIFT_DOWN, HIGH);
+  pinMode(PIN_LIFT_ESTOPPED, OUTPUT);
+  digitalWrite(PIN_LIFT_UP, LOW);
+  digitalWrite(PIN_LIFT_DOWN, LOW);
+  digitalWrite(PIN_LIFT_ESTOPPED, LOW);
 }
 
 static void pin_process_irq (int pin)
@@ -172,7 +174,7 @@ static bool pin_check_ready (void)
   for (pin = 0; pin < NUM_INPUT_PINS; pin ++)
   {
     PROGMEM_readAnything (&icfg [pin], cfg);
-    if (cfg.valid == true && istate[pin].val != HIGH)
+    if (cfg.valid == true && istate[pin].val != HIGH && pin != 8)
     {
       Serial.print (F ("Error: switch or button on during boot - "));
       Serial.print (F ("Failed on pin "));
@@ -217,6 +219,16 @@ static void pin_call_house_isr ()
 static void pin_estop_isr ()
 {
   pin_process_irq (PIN_ESTOP);
+}
+
+static void pin_man_up_isr ()
+{
+  pin_process_irq (PIN_MAN_UP);
+}
+
+static void pin_man_down_isr ()
+{
+  pin_process_irq (PIN_MAN_DOWN);
 }
 
 String switch_state_desc (byte state) 

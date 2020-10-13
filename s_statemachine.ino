@@ -154,7 +154,7 @@ static void sm_enter (void)
   {
     Serial.print (F ("Entering "));
     Serial.println (state_desc (sm_get_curr_state ()));
-    
+
     sm_enter_cb [sm_curr_state] ();
   }
 }
@@ -178,6 +178,7 @@ static void sm_exit (void)
 static void sm_enter_estop (void)
 {
   lift_stop ();
+  lift_estopped ();
 }
 
 
@@ -206,6 +207,7 @@ static void sm_enter_train (void)
 static void sm_enter_idle (void)
 {
   lift_stop ();
+  lift_estop_ok ();
 }
 
 static void sm_enter_up (void)
@@ -230,6 +232,8 @@ static void sm_enter_manual_down (void)
 
 static void sm_enter_stopping (void)
 {
+  lift_stopping ();
+  lift_stop ();
 }
 
 static void sm_estop (int event, long value)

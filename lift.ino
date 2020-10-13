@@ -21,6 +21,7 @@
 #define PIN_MAN_DOWN 10
 #define PIN_LIFT_UP 11
 #define PIN_LIFT_DOWN 12
+#define PIN_LIFT_ESTOPPED 19
 
 #define MOTOR_STOP_TIME 5000
 
@@ -89,18 +90,30 @@ void loop()
 
 void lift_stop (void)
 {
-  digitalWrite(PIN_LIFT_UP, HIGH);
-  digitalWrite(PIN_LIFT_DOWN, HIGH);
+  Serial.println("stop");
+  digitalWrite(PIN_LIFT_UP, LOW);
+  digitalWrite(PIN_LIFT_DOWN, LOW);
+} 
+
+void lift_estopped(void)
+{
+  digitalWrite(PIN_LIFT_ESTOPPED, LOW);  
+}
+
+void lift_estop_ok(void)
+{
+  digitalWrite(PIN_LIFT_ESTOPPED, HIGH);  
 }
 
 void lift_up (void)
 {
-  digitalWrite(PIN_LIFT_UP, LOW);
+  Serial.println("up");
+  digitalWrite(PIN_LIFT_UP, HIGH);
 }
 
 void lift_down (void)
 {
-  digitalWrite(PIN_LIFT_DOWN, LOW);
+  digitalWrite(PIN_LIFT_DOWN, HIGH);
 }
 
 void lift_stopping (void)
